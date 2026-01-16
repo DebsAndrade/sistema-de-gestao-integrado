@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema Gestor Completo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="main-container">
+      <header class="app-header">
+        <h1>🚀 Sistema Gestor Integrado</h1>
+        <div class="status-bar">
+          <span id="estado_msg" class="badge-status">Sistema Pronto</span>
+        </div>
+      </header>
+
+      <div class="dashboard-grid">
+        <aside class="panel user-panel">
+          <h2>1. Membros da Equipa</h2>
+          <div class="form-box">
+            <input id="user_nome" type="text" placeholder="Nome" />
+            <input id="user_email" type="email" placeholder="Email" />
+            <button id="user_addBtn" class="btn-user">Adicionar Membro</button>
+          </div>
+          <div id="user_list" class="scroll-list"></div>
+        </aside>
+
+        <main class="panel task-panel">
+          <div class="task-header">
+            <h2>2. Tarefas do Projeto</h2>
+            <span id="contador_tarefas" class="badge">Total: 0</span>
+          </div>
+
+          <div class="assignment-box">
+            <label for="task_responsavel">Responsável:</label>
+            <select id="task_responsavel">
+              <option value="">-- Seleciona um Membro --</option>
+            </select>
+          </div>
+
+          <div class="form-box-row">
+            <input id="task_input" type="text" placeholder="Nova tarefa..." />
+            <select id="task_categoria">
+              <option value="trabalho">Trabalho</option>
+              <option value="pessoal">Pessoal</option>
+              <option value="estudos">Estudos</option>
+            </select>
+            <button id="task_addBtn" class="btn-primary">Criar Tarefa</button>
+          </div>
+
+          <p id="msg_erro" class="error-msg"></p>
+
+          <div class="toolbar">
+            <button id="task_sortBtn" class="btn-small">Ordenar A-Z</button>
+          </div>
+
+          <ul id="task_list" class="task-ul"></ul>
+        </main>
+      </div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>

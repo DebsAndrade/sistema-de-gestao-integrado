@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "es6",            /* Versão do JavaScript gerado */
+    "module": "commonjs",       /* Tipo de módulos */
+    "strict": true,             /* Verificação rigorosa de tipos */
+    "esModuleInterop": true,
+    "lib": ["es6", "dom"]       /* <--- ISTO É O MAIS IMPORTANTE: Inclui "dom" */
+  }
+}
