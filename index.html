@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt">
   <head>
     <meta charset="UTF-8" />
@@ -19,8 +19,8 @@
         <aside class="panel user-panel">
           <h2>1. Membros da Equipa</h2>
           <div class="form-box">
-            <input id="user_nome" type="text" placeholder="Nome" />
-            <input id="user_email" type="email" placeholder="Email" />
+            <input id="user_nome" type="text" required placeholder="Nome" />
+            <input id="user_email" type="email" required placeholder="Email" />
             <button id="user_addBtn" class="btn-user">Adicionar Membro</button>
           </div>
           <div id="user_list" class="scroll-list"></div>
@@ -52,6 +52,12 @@
           <p id="msg_erro" class="error-msg"></p>
 
           <div class="toolbar">
+            <input
+              id="task_search"
+              type="text"
+              placeholder="🔍 Pesquisar tarefa..."
+              style="flex: 1"
+            />
             <button id="task_sortBtn" class="btn-small">Ordenar A-Z</button>
           </div>
 

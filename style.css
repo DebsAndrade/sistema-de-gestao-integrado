@@ -44,7 +44,7 @@ body {
 /* Grid Principal */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr; /* Coluna utilizadores menor, tarefas maior */
+  grid-template-columns: 1fr 2fr; /* Coluna utilizadores menor, tarefas maiores */
   gap: 20px;
 }
 
@@ -163,7 +163,7 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-left: 5px solid #ccc; /* Cor muda via JS */
+  border-left: 5px solid #ccc; /* Cor muda via TS */
 }
 
 /* Responsividade */

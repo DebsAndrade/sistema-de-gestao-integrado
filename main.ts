@@ -19,7 +19,7 @@ class UtilizadorClass implements Utilizador {
   }
 }
 
-// Do teu Ex2 (Tarefas - agora com um "responsável")
+// Do teu Ex2 (Tarefas)
 type Categoria = "trabalho" | "pessoal" | "estudos";
 
 interface Tarefa {
@@ -57,8 +57,8 @@ class TarefaClass implements Tarefa {
 }
 
 // Listas para guardar os dados
-const listaUtilizadores: Utilizador[] = [];
-const listaTarefas: Tarefa[] = [];
+const listaUtilizadores: UtilizadorClass[] = [];
+const listaTarefas: TarefaClass[] = [];
 
 // Inputs de Utilizador
 const inUserNome = document.getElementById("user_nome") as HTMLInputElement;
@@ -68,13 +68,22 @@ const divUserList = document.getElementById("user_list") as HTMLDivElement;
 
 // Inputs de Tarefa
 const inTaskInput = document.getElementById("task_input") as HTMLInputElement;
-const selTaskCat = document.getElementById("task_categoria") as HTMLSelectElement;
-const selResponsavel = document.getElementById("task_responsavel") as HTMLSelectElement;
+const selTaskCat = document.getElementById(
+  "task_categoria"
+) as HTMLSelectElement;
+const selResponsavel = document.getElementById(
+  "task_responsavel"
+) as HTMLSelectElement;
 const btnAddTask = document.getElementById("task_addBtn") as HTMLButtonElement;
-const btnSortTask = document.getElementById("task_sortBtn") as HTMLButtonElement;
+const btnSortTask = document.getElementById(
+  "task_sortBtn"
+) as HTMLButtonElement;
 const ulTaskList = document.getElementById("task_list") as HTMLUListElement;
 
-// Outputs de Estado (Do teu ficheiro 'Autónomo')
+// NOVO: Input de Pesquisa
+const inTaskSearch = document.getElementById("task_search") as HTMLInputElement;
+
+// Outputs de Estado
 const pMsgErro = document.getElementById("msg_erro") as HTMLParagraphElement;
 const spanEstado = document.getElementById("estado_msg") as HTMLSpanElement;
 const spanContador = document.getElementById(
@@ -84,39 +93,45 @@ const spanContador = document.getElementById(
 // Função do 'Autónomo' para gerir erros
 function mostrarErro(mensagem: string): void {
   pMsgErro.textContent = mensagem;
-  pMsgErro.style.color = "red"; // Como tinhas no código
+  pMsgErro.style.color = "red";
 }
 
-// Função do 'Autónomo' para atualizar frases de estado
+// Atualizar frases de estado (Pendentes vs Concluídas)
 function atualizarEstadoSistema(): void {
-  const total = listaTarefas.length;
-  spanContador.textContent = `Total: ${total}`;
+  const totalConcluidas = listaTarefas.filter(
+    (t) => t.concluida === true
+  ).length;
+  const totalPendentes = listaTarefas.length - totalConcluidas;
 
-  if (total === 0) {
+  spanContador.textContent = `Pendentes: ${totalPendentes} | Concluídas: ${totalConcluidas}`;
+
+  if (listaTarefas.length === 0) {
     spanEstado.textContent = "Sem tarefas pendentes 😴";
     spanEstado.style.color = "gray";
-  } else if (total < 5) {
+  } else if (totalPendentes === 0) {
+    spanEstado.textContent = "Tudo feito! Parabéns! 🎉";
+    spanEstado.style.color = "var(--success)";
+  } else if (totalPendentes < 5) {
     spanEstado.textContent = "Trabalho a decorrer 🔨";
     spanEstado.style.color = "orange";
   } else {
-    spanEstado.textContent = "Muitas tarefas! 🔥";
+    spanEstado.textContent = "Muitas tarefas pendentes! 🔥";
     spanEstado.style.color = "red";
   }
 }
 
-// Função para atualizar o Select de Responsáveis
+// Atualizar Select de Responsáveis (Apenas Ativos)
 function atualizarSelectResponsaveis() {
-  // Guarda o valor atual para não perder a seleção ao redesenhar
   const valorAtual = selResponsavel.value;
-
-  // Limpa e recria a opção padrão
   selResponsavel.innerHTML = `<option value="">-- Seleciona um Membro --</option>`;
 
   listaUtilizadores.forEach((user) => {
-    const option = document.createElement("option");
-    option.value = user.nome; // Usamos o nome como valor
-    option.textContent = user.nome;
-    selResponsavel.appendChild(option);
+    if (user.ativo === true) {
+      const option = document.createElement("option");
+      option.value = user.nome;
+      option.textContent = user.nome;
+      selResponsavel.appendChild(option);
+    }
   });
 
   selResponsavel.value = valorAtual;
@@ -124,56 +139,163 @@ function atualizarSelectResponsaveis() {
 
 function renderUsers() {
   divUserList.innerHTML = "";
+
   listaUtilizadores.forEach((user) => {
     const div = document.createElement("div");
     div.className = "user-card";
+
+    div.style.display = "flex";
+    div.style.justifyContent = "space-between";
+    div.style.alignItems = "center";
+    div.style.gap = "10px";
+
+    const btnTexto = user.ativo ? "Desativar" : "Ativar";
+    const btnCor = user.ativo ? "#b2bec3" : "#00b894";
+
     div.innerHTML = `
-            <strong>${user.nome}</strong>
-            <small>${user.email}</small>
+            <div style="flex: 1">
+                <strong>${user.nome}</strong> <small>(ID: ${user.id})</small>
+                <br>
+                <small>${user.email}</small>
+                <br>
+                <small style="font-weight:bold; color: ${user.ativo ? "green" : "red"}">
+                    ${user.ativo ? "🟢 Ativo" : "🔴 Inativo"}
+                </small>
+            </div>
+            
+            <div style="display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-toggle-user" style="background:${btnCor}; color:white; border:none; width:80px; padding:5px 0; border-radius:4px; cursor:pointer; text-align:center;">
+                    ${btnTexto}
+                </button>
+
+                <button class="btn-del-user" style="background:#ff7675; color:white; border:none; width:80px; padding:5px 0; border-radius:4px; cursor:pointer; text-align:center;">
+                    Excluir
+                </button>
+            </div>
         `;
+
+    const btnToggle = div.querySelector(
+      ".btn-toggle-user"
+    ) as HTMLButtonElement;
+    btnToggle.onclick = () => {
+      user.ativo = !user.ativo;
+      renderUsers();
+    };
+
+    const btnDel = div.querySelector(".btn-del-user") as HTMLButtonElement;
+    btnDel.onclick = () => {
+      const confirmar = confirm(
+        `Tens a certeza que queres apagar o ${user.nome}?`
+      );
+      if (confirmar) {
+        const index = listaUtilizadores.indexOf(user);
+        if (index > -1) {
+          listaUtilizadores.splice(index, 1);
+          renderUsers();
+        }
+      }
+    };
+
     divUserList.appendChild(div);
   });
-  // Sempre que desenhamos a lista, atualizamos o select para as tarefas
+
   atualizarSelectResponsaveis();
 }
 
-function renderTasks() {
+function renderTasks(listaParaMostrar: TarefaClass[] = listaTarefas) {
   ulTaskList.innerHTML = "";
 
-  listaTarefas.forEach((task) => {
+  // Usamos 'listaParaMostrar' em vez de 'listaTarefas' diretamente no loop
+  listaParaMostrar.forEach((task) => {
     const li = document.createElement("li");
     li.className = "task-item";
 
-    // Cores baseadas na categoria (Ex2)
     let corBorda = "#ccc";
     if (task.categoria === "trabalho") corBorda = "#ff7675";
     if (task.categoria === "pessoal") corBorda = "#00b894";
     if (task.categoria === "estudos") corBorda = "#0984e3";
+
+    if (task.concluida) corBorda = "#b2bec3";
+
     li.style.borderLeftColor = corBorda;
 
-    li.innerHTML = `
-            <div>
-                <strong>${task.titulo}</strong>
-                <br>
-                <small style="color:#666">👤 ${
-                  task.responsavelNome
-                } | 🏷️ ${task.categoria.toUpperCase()}</small>
-            </div>
-            <button class="btn-del" style="background:transparent; color:red; width:auto; font-size:1.2rem;">&times;</button>
-        `;
+    const estiloTitulo = task.concluida
+      ? "text-decoration: line-through; color: #b2bec3;"
+      : "";
 
-    // Botão remover
-    const btnDel = li.querySelector(".btn-del") as HTMLButtonElement;
-    btnDel.onclick = () => {
-      const index = listaTarefas.indexOf(task);
-      if (index > -1) {
-        listaTarefas.splice(index, 1);
+    const dataMsg =
+      task.concluida && task.dataConclusao
+        ? `<span style="color:green; font-size:0.8rem; margin-left:5px;">(Concluída em: ${task.dataConclusao.toLocaleString()})</span>`
+        : "";
+
+    li.innerHTML = `
+        <div class="task-content" style="flex: 1; cursor: pointer;">
+            <strong style="${estiloTitulo}">${task.titulo}</strong>
+            ${dataMsg}
+            <br>
+            <small style="color:#666">👤 ${task.responsavelNome} | 🏷️ ${task.categoria.toUpperCase()}</small>
+        </div>
+
+        <div style="display:flex; gap: 3px;">
+            <button class="btn-edit" style="background:transparent; color:red; width:auto; font-size:1.2rem;">✏️</button>
+            <button class="btn-del" style="background:transparent; color:red; width:auto; font-size:1.2rem;">❌</button>
+        </div>
+    `;
+
+    const divContent = li.querySelector(".task-content") as HTMLDivElement;
+    divContent.onclick = () => {
+      task.concluida = !task.concluida;
+
+      if (task.concluida) {
+        task.dataConclusao = new Date();
+      } else {
+        task.dataConclusao = undefined;
+      }
+      renderTasks(); // Renderiza novamente (se houver pesquisa, mantém o filtro? Por agora reseta)
+      atualizarEstadoSistema();
+    };
+
+    const btnEdit = li.querySelector(".btn-edit") as HTMLButtonElement;
+    btnEdit.onclick = (e) => {
+      e.stopPropagation();
+      const novoTitulo = prompt("Editar título da tarefa:", task.titulo);
+      if (novoTitulo !== null && novoTitulo.trim() !== "") {
+        task.titulo = novoTitulo;
         renderTasks();
-        atualizarEstadoSistema(); // Recalcula estado (Autónomo)
+      }
+    };
+
+    const btnDel = li.querySelector(".btn-del") as HTMLButtonElement;
+    btnDel.onclick = (e) => {
+      e.stopPropagation();
+      const confirmar = confirm(
+        "Tem a certeza que deseja excluir esta tarefa?"
+      );
+      if (confirmar) {
+        const index = listaTarefas.indexOf(task);
+        if (index > -1) {
+          listaTarefas.splice(index, 1);
+          renderTasks(); // Nota: se estiveres a pesquisar, isto pode resetar a vista para todas
+          atualizarEstadoSistema();
+        }
       }
     };
 
     ulTaskList.appendChild(li);
+  });
+}
+// Evento de Pesquisa
+if (inTaskSearch) {
+  inTaskSearch.addEventListener("input", () => {
+    const termo = inTaskSearch.value.toLowerCase();
+
+    // Filtra as tarefas que incluem o texto (no título)
+    const tarefasFiltradas = listaTarefas.filter((t) =>
+      t.titulo.toLowerCase().includes(termo)
+    );
+
+    // Chama o render passando SÓ as filtradas
+    renderTasks(tarefasFiltradas);
   });
 }
 
@@ -181,6 +303,11 @@ function renderTasks() {
 btnAddUser.addEventListener("click", () => {
   if (!inUserNome.value || !inUserEmail.value) {
     alert("Preenche os dados do utilizador.");
+    return;
+  }
+
+  if (!inUserEmail.value.includes("@") || !inUserEmail.value.includes(".")) {
+    alert("Email inválido. Precisa ter '@' e '.'");
     return;
   }
 
@@ -202,19 +329,16 @@ btnAddTask.addEventListener("click", () => {
   const texto = inTaskInput.value;
   const responsavel = selResponsavel.value;
 
-  // 1. Validação de Texto Curto (Autónomo)
   if (texto.length < 3) {
     mostrarErro("❌ A tarefa deve ter pelo menos 3 caracteres.");
     return;
   }
 
-  // 2. Validação de Responsável (Lógica nova para integrar Utilizadores)
   if (responsavel === "") {
     mostrarErro("⚠️ Tens de escolher um membro da equipa.");
     return;
   }
 
-  // Se passou, limpa erroClass
   mostrarErro("");
 
   const novaTarefa = new TarefaClass(
@@ -225,16 +349,30 @@ btnAddTask.addEventListener("click", () => {
   );
 
   listaTarefas.push(novaTarefa);
+
+  // Limpa a pesquisa para mostrar a nova tarefa
+  if (inTaskSearch) inTaskSearch.value = "";
+
   renderTasks();
-  atualizarEstadoSistema(); // Atualiza a barra de topo (Autónomo)
+  atualizarEstadoSistema();
 
   inTaskInput.value = "";
 });
 
-// Ordenar Tarefas (Ex2)
+// Ordenar Tarefas
 btnSortTask.addEventListener("click", () => {
   listaTarefas.sort((a, b) => a.titulo.localeCompare(b.titulo));
-  renderTasks();
+
+  // Se houver pesquisa ativa, ordena mas aplica o filtro de novo
+  if (inTaskSearch && inTaskSearch.value !== "") {
+    const termo = inTaskSearch.value.toLowerCase();
+    const filtradas = listaTarefas.filter((t) =>
+      t.titulo.toLowerCase().includes(termo)
+    );
+    renderTasks(filtradas);
+  } else {
+    renderTasks();
+  }
 });
 
 // Inicialização
