@@ -21,11 +21,19 @@ class TarefaClass {
 // Listas para guardar os dados
 const listaUtilizadores = [];
 const listaTarefas = [];
+// ==========================================
+// CAPTURA DE ELEMENTOS DO DOM
+// ==========================================
 // Inputs de Utilizador
 const inUserNome = document.getElementById("user_nome");
 const inUserEmail = document.getElementById("user_email");
 const btnAddUser = document.getElementById("user_addBtn");
 const divUserList = document.getElementById("user_list");
+const inUserSearch = document.getElementById("user_search");
+// NOVO: Botão Sort e Spans de Contagem
+const btnSortUser = document.getElementById("user_sortBtn");
+const spanUserActive = document.getElementById("count_active");
+const spanUserInactive = document.getElementById("count_inactive");
 // Inputs de Tarefa
 const inTaskInput = document.getElementById("task_input");
 const selTaskCat = document.getElementById("task_categoria");
@@ -33,7 +41,6 @@ const selResponsavel = document.getElementById("task_responsavel");
 const btnAddTask = document.getElementById("task_addBtn");
 const btnSortTask = document.getElementById("task_sortBtn");
 const ulTaskList = document.getElementById("task_list");
-// NOVO: Input de Pesquisa
 const inTaskSearch = document.getElementById("task_search");
 // Outputs de Estado
 const pMsgErro = document.getElementById("msg_erro");
@@ -44,7 +51,7 @@ function mostrarErro(mensagem) {
     pMsgErro.textContent = mensagem;
     pMsgErro.style.color = "red";
 }
-// Atualizar frases de estado (Pendentes vs Concluídas)
+// Atualizar frases de estado
 function atualizarEstadoSistema() {
     const totalConcluidas = listaTarefas.filter((t) => t.concluida === true).length;
     const totalPendentes = listaTarefas.length - totalConcluidas;
@@ -66,7 +73,7 @@ function atualizarEstadoSistema() {
         spanEstado.style.color = "red";
     }
 }
-// Atualizar Select de Responsáveis (Apenas Ativos)
+// Atualizar Select de Responsáveis
 function atualizarSelectResponsaveis() {
     const valorAtual = selResponsavel.value;
     selResponsavel.innerHTML = `<option value="">-- Seleciona um Membro --</option>`;
@@ -80,9 +87,21 @@ function atualizarSelectResponsaveis() {
     });
     selResponsavel.value = valorAtual;
 }
-function renderUsers() {
+// =========================================================
+// RENDERIZAR UTILIZADORES + CONTADORES
+// =========================================================
+function renderUsers(listaParaMostrar = listaUtilizadores) {
     divUserList.innerHTML = "";
-    listaUtilizadores.forEach((user) => {
+    // 1. ATUALIZAR CONTADORES DE UTILIZADORES (NOVO)
+    // Contamos sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
+    const totalAtivos = listaUtilizadores.filter((u) => u.ativo === true).length;
+    const totalInativos = listaUtilizadores.length - totalAtivos;
+    if (spanUserActive)
+        spanUserActive.textContent = totalAtivos.toString();
+    if (spanUserInactive)
+        spanUserInactive.textContent = totalInativos.toString();
+    // 2. DESENHAR A LISTA
+    listaParaMostrar.forEach((user) => {
         const div = document.createElement("div");
         div.className = "user-card";
         div.style.display = "flex";
@@ -132,9 +151,32 @@ function renderUsers() {
     });
     atualizarSelectResponsaveis();
 }
+// EVENTO: PESQUISA UTILIZADOR
+if (inUserSearch) {
+    inUserSearch.addEventListener("input", () => {
+        const termo = inUserSearch.value.toLowerCase();
+        const filtrados = listaUtilizadores.filter((u) => u.nome.toLowerCase().includes(termo));
+        renderUsers(filtrados);
+    });
+}
+// EVENTO: ORDENAR UTILIZADORES (NOVO)
+if (btnSortUser) {
+    btnSortUser.addEventListener("click", () => {
+        // Ordena a lista original alfabeticamente
+        listaUtilizadores.sort((a, b) => a.nome.localeCompare(b.nome));
+        // Se houver pesquisa ativa, mantém o filtro visualmente
+        if (inUserSearch && inUserSearch.value !== "") {
+            const termo = inUserSearch.value.toLowerCase();
+            const filtrados = listaUtilizadores.filter((u) => u.nome.toLowerCase().includes(termo));
+            renderUsers(filtrados);
+        }
+        else {
+            renderUsers();
+        }
+    });
+}
 function renderTasks(listaParaMostrar = listaTarefas) {
     ulTaskList.innerHTML = "";
-    // Usamos 'listaParaMostrar' em vez de 'listaTarefas' diretamente no loop
     listaParaMostrar.forEach((task) => {
         const li = document.createElement("li");
         li.className = "task-item";
@@ -176,7 +218,7 @@ function renderTasks(listaParaMostrar = listaTarefas) {
             else {
                 task.dataConclusao = undefined;
             }
-            renderTasks(); // Renderiza novamente (se houver pesquisa, mantém o filtro? Por agora reseta)
+            renderTasks();
             atualizarEstadoSistema();
         };
         const btnEdit = li.querySelector(".btn-edit");
@@ -196,7 +238,7 @@ function renderTasks(listaParaMostrar = listaTarefas) {
                 const index = listaTarefas.indexOf(task);
                 if (index > -1) {
                     listaTarefas.splice(index, 1);
-                    renderTasks(); // Nota: se estiveres a pesquisar, isto pode resetar a vista para todas
+                    renderTasks();
                     atualizarEstadoSistema();
                 }
             }
@@ -204,13 +246,11 @@ function renderTasks(listaParaMostrar = listaTarefas) {
         ulTaskList.appendChild(li);
     });
 }
-// Evento de Pesquisa
+// EVENTO PESQUISA TAREFA
 if (inTaskSearch) {
     inTaskSearch.addEventListener("input", () => {
         const termo = inTaskSearch.value.toLowerCase();
-        // Filtra as tarefas que incluem o texto (no título)
         const tarefasFiltradas = listaTarefas.filter((t) => t.titulo.toLowerCase().includes(termo));
-        // Chama o render passando SÓ as filtradas
         renderTasks(tarefasFiltradas);
     });
 }
@@ -226,6 +266,8 @@ btnAddUser.addEventListener("click", () => {
     }
     const novoUser = new UtilizadorClass(Date.now(), inUserNome.value, inUserEmail.value);
     listaUtilizadores.push(novoUser);
+    if (inUserSearch)
+        inUserSearch.value = "";
     renderUsers();
     inUserNome.value = "";
     inUserEmail.value = "";
@@ -245,7 +287,6 @@ btnAddTask.addEventListener("click", () => {
     mostrarErro("");
     const novaTarefa = new TarefaClass(Date.now(), texto, selTaskCat.value, responsavel);
     listaTarefas.push(novaTarefa);
-    // Limpa a pesquisa para mostrar a nova tarefa
     if (inTaskSearch)
         inTaskSearch.value = "";
     renderTasks();
@@ -255,7 +296,6 @@ btnAddTask.addEventListener("click", () => {
 // Ordenar Tarefas
 btnSortTask.addEventListener("click", () => {
     listaTarefas.sort((a, b) => a.titulo.localeCompare(b.titulo));
-    // Se houver pesquisa ativa, ordena mas aplica o filtro de novo
     if (inTaskSearch && inTaskSearch.value !== "") {
         const termo = inTaskSearch.value.toLowerCase();
         const filtradas = listaTarefas.filter((t) => t.titulo.toLowerCase().includes(termo));

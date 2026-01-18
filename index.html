@@ -18,11 +18,27 @@
       <div class="dashboard-grid">
         <aside class="panel user-panel">
           <h2>1. Membros da Equipa</h2>
+
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">
+             Ativos: <span id="count_active" style="font-weight:bold; color:var(--success)">0</span> | 
+             Inativos: <span id="count_inactive" style="font-weight:bold; color:var(--danger)">0</span>
+          </div>
+
           <div class="form-box">
-            <input id="user_nome" type="text" required placeholder="Nome" />
-            <input id="user_email" type="email" required placeholder="Email" />
+            <input id="user_nome" type="text" placeholder="Nome" />
+            <input id="user_email" type="email" placeholder="Email" />
             <button id="user_addBtn" class="btn-user">Adicionar Membro</button>
           </div>
+
+          <div style="margin-top: 10px; margin-bottom: 10px">
+            <input
+              id="user_search"
+              type="text"
+              placeholder="🔍 Procurar membro..."
+              style="width: 100%"
+            />
+          </div>
+
           <div id="user_list" class="scroll-list"></div>
         </aside>
 
