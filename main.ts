@@ -60,10 +60,6 @@ class TarefaClass implements Tarefa {
 const listaUtilizadores: UtilizadorClass[] = [];
 const listaTarefas: TarefaClass[] = [];
 
-// ==========================================
-// CAPTURA DE ELEMENTOS DO DOM
-// ==========================================
-
 // Inputs de Utilizador
 const inUserNome = document.getElementById("user_nome") as HTMLInputElement;
 const inUserEmail = document.getElementById("user_email") as HTMLInputElement;
@@ -153,7 +149,7 @@ function atualizarSelectResponsaveis() {
 function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
   divUserList.innerHTML = "";
 
-  // Contamos sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
+  // Conta sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
   const totalAtivos = listaUtilizadores.filter((u) => u.ativo === true).length;
   const totalInativos = listaUtilizadores.length - totalAtivos;
 
@@ -234,7 +230,7 @@ if (inUserSearch) {
   });
 }
 
-// EVENTO: ORDENAR UTILIZADORES (NOVO)
+// EVENTO: ORDENAR UTILIZADORES
 if (btnSortUser) {
   btnSortUser.addEventListener("click", () => {
     // Ordena a lista original alfabeticamente
