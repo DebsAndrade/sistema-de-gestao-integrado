@@ -150,13 +150,9 @@ function atualizarSelectResponsaveis() {
   selResponsavel.value = valorAtual;
 }
 
-// =========================================================
-// RENDERIZAR UTILIZADORES + CONTADORES
-// =========================================================
 function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
   divUserList.innerHTML = "";
 
-  // 1. ATUALIZAR CONTADORES DE UTILIZADORES (NOVO)
   // Contamos sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
   const totalAtivos = listaUtilizadores.filter((u) => u.ativo === true).length;
   const totalInativos = listaUtilizadores.length - totalAtivos;
@@ -417,8 +413,8 @@ btnSortTask.addEventListener("click", () => {
 
   if (inTaskSearch && inTaskSearch.value !== "") {
     const termo = inTaskSearch.value.toLowerCase();
-    const filtradas = listaTarefas.filter((t) =>
-      t.titulo.toLowerCase().includes(termo)
+    const filtradas = listaTarefas.filter((tarefa) =>
+      tarefa.titulo.toLowerCase().includes(termo)
     );
     renderTasks(filtradas);
   } else {
