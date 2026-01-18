@@ -21,9 +21,6 @@ class TarefaClass {
 // Listas para guardar os dados
 const listaUtilizadores = [];
 const listaTarefas = [];
-// ==========================================
-// CAPTURA DE ELEMENTOS DO DOM
-// ==========================================
 // Inputs de Utilizador
 const inUserNome = document.getElementById("user_nome");
 const inUserEmail = document.getElementById("user_email");
@@ -89,7 +86,7 @@ function atualizarSelectResponsaveis() {
 }
 function renderUsers(listaParaMostrar = listaUtilizadores) {
     divUserList.innerHTML = "";
-    // Contamos sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
+    // Conta sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
     const totalAtivos = listaUtilizadores.filter((u) => u.ativo === true).length;
     const totalInativos = listaUtilizadores.length - totalAtivos;
     if (spanUserActive)
@@ -155,7 +152,7 @@ if (inUserSearch) {
         renderUsers(filtrados);
     });
 }
-// EVENTO: ORDENAR UTILIZADORES (NOVO)
+// EVENTO: ORDENAR UTILIZADORES
 if (btnSortUser) {
     btnSortUser.addEventListener("click", () => {
         // Ordena a lista original alfabeticamente
