@@ -298,5 +298,22 @@ btnSortTask.addEventListener("click", () => {
         renderTasks();
     }
 });
+// Dados Iniciais Falsos (19 - autonomo)
+function loadInitialData() {
+    const fakeData = [
+        { id: 1, name: "Daniel Moraes", email: "daniel.moraesa@gmail.com", active: true },
+        { id: 2, name: "Tais Dias", email: "tais.diasc@gmail.com", active: false },
+        { id: 3, name: "Aurora Almeida", email: "aurora.almeida@gmail.com", active: true },
+        { id: 4, name: "Gabriella Ayres", email: "gabriella.ayres@gmail.com", active: true },
+        { id: 5, name: "Débora Andrade", email: "debora@gmail.com", active: true }
+    ];
+    fakeData.forEach(data => {
+        const newUser = new UtilizadorClass(data.id, data.name, data.email);
+        newUser.ativo = data.active;
+        listaUtilizadores.push(newUser);
+    });
+    renderUsers();
+}
+loadInitialData();
 // Inicialização
 atualizarEstadoSistema();
