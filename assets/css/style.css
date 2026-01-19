@@ -41,6 +41,12 @@ body {
   color: var(--primary);
 }
 
+label {
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: block;
+}
+
 /* Grid Principal */
 .dashboard-grid {
   display: grid;
