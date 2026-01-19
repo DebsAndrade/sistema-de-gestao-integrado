@@ -63,6 +63,39 @@ h2 {
   padding-bottom: 5px;
 }
 
+/* Estilo para Estatísticas (Ex18) */
+.stats-box {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f1f2f6;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  background: var(--white);
+  padding: 5px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.stat-item small {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  color: #636e72;
+}
+
+.stat-item strong {
+  font-size: 1.2rem;
+  color: var(--primary);
+}
+
 /* Inputs */
 select {
   width: 100%;

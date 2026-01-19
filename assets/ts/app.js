@@ -43,6 +43,9 @@ const inTaskSearch = document.getElementById("task_search");
 const pMsgErro = document.getElementById("msg_erro");
 const spanEstado = document.getElementById("estado_msg");
 const spanContador = document.getElementById("contador_tarefas");
+// Elementos das Estatísticas
+const spanTotalUsers = document.getElementById("stat_total_users");
+const spanPercentActive = document.getElementById("stat_percent_active");
 // Função do 'Autónomo' para gerir erros
 function mostrarErro(mensagem) {
     pMsgErro.textContent = mensagem;
@@ -83,6 +86,26 @@ function atualizarSelectResponsaveis() {
         }
     });
     selResponsavel.value = valorAtual;
+}
+function atualizarEstatisticas() {
+    const total = listaUtilizadores.length;
+    // Evitar divisão por zero
+    if (total === 0) {
+        if (spanTotalUsers)
+            spanTotalUsers.textContent = "0";
+        if (spanPercentActive)
+            spanPercentActive.textContent = "0%";
+        return;
+    }
+    const ativos = listaUtilizadores.filter((u) => u.ativo).length;
+    const percentagem = (ativos / total) * 100;
+    if (spanTotalUsers) {
+        spanTotalUsers.textContent = total.toString();
+    }
+    if (spanPercentActive) {
+        // toFixed(0) para arredondar (ex: 33%), ou toFixed(1) para uma casa decimal (33.3%)
+        spanPercentActive.textContent = `${percentagem.toFixed(0)}%`;
+    }
 }
 function renderUsers(listaParaMostrar = listaUtilizadores) {
     divUserList.innerHTML = "";
@@ -143,6 +166,7 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         divUserList.appendChild(div);
     });
     atualizarSelectResponsaveis();
+    atualizarEstatisticas();
 }
 // EVENTO: PESQUISA UTILIZADOR
 if (inUserSearch) {
@@ -301,13 +325,28 @@ btnSortTask.addEventListener("click", () => {
 // Dados Iniciais Falsos (19 - autonomo)
 function loadInitialData() {
     const fakeData = [
-        { id: 1, name: "Daniel Moraes", email: "daniel.moraesa@gmail.com", active: true },
+        {
+            id: 1,
+            name: "Daniel Moraes",
+            email: "daniel.moraesa@gmail.com",
+            active: true,
+        },
         { id: 2, name: "Tais Dias", email: "tais.diasc@gmail.com", active: false },
-        { id: 3, name: "Aurora Almeida", email: "aurora.almeida@gmail.com", active: true },
-        { id: 4, name: "Gabriella Ayres", email: "gabriella.ayres@gmail.com", active: true },
-        { id: 5, name: "Débora Andrade", email: "debora@gmail.com", active: true }
+        {
+            id: 3,
+            name: "Aurora Almeida",
+            email: "aurora.almeida@gmail.com",
+            active: true,
+        },
+        {
+            id: 4,
+            name: "Gabriella Ayres",
+            email: "gabriella.ayres@gmail.com",
+            active: true,
+        },
+        { id: 5, name: "Débora Andrade", email: "debora@gmail.com", active: true },
     ];
-    fakeData.forEach(data => {
+    fakeData.forEach((data) => {
         const newUser = new UtilizadorClass(data.id, data.name, data.email);
         newUser.ativo = data.active;
         listaUtilizadores.push(newUser);

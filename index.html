@@ -19,9 +19,30 @@
         <aside class="panel user-panel">
           <h2>1. Membros da Equipa</h2>
 
-          <div style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">
-             Ativos: <span id="count_active" style="font-weight:bold; color:var(--success)">0</span> | 
-             Inativos: <span id="count_inactive" style="font-weight:bold; color:var(--danger)">0</span>
+          <div class="stats-box">
+            <div class="stat-item">
+              <small>Total Utilizadores</small>
+              <strong id="stat_total_users">0</strong>
+            </div>
+            <div class="stat-item">
+              <small>Taxa de Atividade</small>
+              <strong id="stat_percent_active">0%</strong>
+            </div>
+          </div>
+
+          <div style="font-size: 0.85rem; color: #666; margin-bottom: 10px">
+            Ativos:
+            <span
+              id="count_active"
+              style="font-weight: bold; color: var(--success)"
+              >0</span
+            >
+            | Inativos:
+            <span
+              id="count_inactive"
+              style="font-weight: bold; color: var(--danger)"
+              >0</span
+            >
           </div>
 
           <div class="form-box">

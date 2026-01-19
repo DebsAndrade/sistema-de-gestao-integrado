@@ -45,7 +45,7 @@ class TarefaClass implements Tarefa {
     titulo: string,
     categoria: Categoria,
     responsavelNome?: string,
-    dataConclusao?: Date
+    dataConclusao?: Date,
   ) {
     this.id = id;
     this.titulo = titulo;
@@ -68,26 +68,26 @@ const divUserList = document.getElementById("user_list") as HTMLDivElement;
 const inUserSearch = document.getElementById("user_search") as HTMLInputElement;
 // NOVO: Botão Sort e Spans de Contagem
 const btnSortUser = document.getElementById(
-  "user_sortBtn"
+  "user_sortBtn",
 ) as HTMLButtonElement;
 const spanUserActive = document.getElementById(
-  "count_active"
+  "count_active",
 ) as HTMLSpanElement;
 const spanUserInactive = document.getElementById(
-  "count_inactive"
+  "count_inactive",
 ) as HTMLSpanElement;
 
 // Inputs de Tarefa
 const inTaskInput = document.getElementById("task_input") as HTMLInputElement;
 const selTaskCat = document.getElementById(
-  "task_categoria"
+  "task_categoria",
 ) as HTMLSelectElement;
 const selResponsavel = document.getElementById(
-  "task_responsavel"
+  "task_responsavel",
 ) as HTMLSelectElement;
 const btnAddTask = document.getElementById("task_addBtn") as HTMLButtonElement;
 const btnSortTask = document.getElementById(
-  "task_sortBtn"
+  "task_sortBtn",
 ) as HTMLButtonElement;
 const ulTaskList = document.getElementById("task_list") as HTMLUListElement;
 const inTaskSearch = document.getElementById("task_search") as HTMLInputElement;
@@ -96,8 +96,16 @@ const inTaskSearch = document.getElementById("task_search") as HTMLInputElement;
 const pMsgErro = document.getElementById("msg_erro") as HTMLParagraphElement;
 const spanEstado = document.getElementById("estado_msg") as HTMLSpanElement;
 const spanContador = document.getElementById(
-  "contador_tarefas"
+  "contador_tarefas",
 ) as HTMLSpanElement;
+
+// Elementos das Estatísticas
+const spanTotalUsers = document.getElementById(
+  "stat_total_users",
+) as HTMLElement;
+const spanPercentActive = document.getElementById(
+  "stat_percent_active",
+) as HTMLElement;
 
 // Função do 'Autónomo' para gerir erros
 function mostrarErro(mensagem: string): void {
@@ -108,7 +116,7 @@ function mostrarErro(mensagem: string): void {
 // Atualizar frases de estado
 function atualizarEstadoSistema(): void {
   const totalConcluidas = listaTarefas.filter(
-    (t) => t.concluida === true
+    (t) => t.concluida === true,
   ).length;
   const totalPendentes = listaTarefas.length - totalConcluidas;
 
@@ -144,6 +152,29 @@ function atualizarSelectResponsaveis() {
   });
 
   selResponsavel.value = valorAtual;
+}
+
+function atualizarEstatisticas(): void {
+  const total = listaUtilizadores.length;
+
+  // Evitar divisão por zero
+  if (total === 0) {
+    if (spanTotalUsers) spanTotalUsers.textContent = "0";
+    if (spanPercentActive) spanPercentActive.textContent = "0%";
+    return;
+  }
+
+  const ativos = listaUtilizadores.filter((u) => u.ativo).length;
+  const percentagem = (ativos / total) * 100;
+
+  if (spanTotalUsers) {
+    spanTotalUsers.textContent = total.toString();
+  }
+
+  if (spanPercentActive) {
+    // toFixed(0) para arredondar (ex: 33%), ou toFixed(1) para uma casa decimal (33.3%)
+    spanPercentActive.textContent = `${percentagem.toFixed(0)}%`;
+  }
 }
 
 function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
@@ -192,7 +223,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
         `;
 
     const btnToggle = div.querySelector(
-      ".btn-toggle-user"
+      ".btn-toggle-user",
     ) as HTMLButtonElement;
     btnToggle.onclick = () => {
       user.ativo = !user.ativo;
@@ -202,7 +233,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
     const btnDel = div.querySelector(".btn-del-user") as HTMLButtonElement;
     btnDel.onclick = () => {
       const confirmar = confirm(
-        `Tens a certeza que queres apagar o ${user.nome}?`
+        `Tens a certeza que queres apagar o ${user.nome}?`,
       );
       if (confirmar) {
         const index = listaUtilizadores.indexOf(user);
@@ -217,6 +248,8 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
   });
 
   atualizarSelectResponsaveis();
+
+  atualizarEstatisticas();
 }
 
 // EVENTO: PESQUISA UTILIZADOR
@@ -224,7 +257,7 @@ if (inUserSearch) {
   inUserSearch.addEventListener("input", () => {
     const termo = inUserSearch.value.toLowerCase();
     const filtrados = listaUtilizadores.filter((u) =>
-      u.nome.toLowerCase().includes(termo)
+      u.nome.toLowerCase().includes(termo),
     );
     renderUsers(filtrados);
   });
@@ -240,7 +273,7 @@ if (btnSortUser) {
     if (inUserSearch && inUserSearch.value !== "") {
       const termo = inUserSearch.value.toLowerCase();
       const filtrados = listaUtilizadores.filter((u) =>
-        u.nome.toLowerCase().includes(termo)
+        u.nome.toLowerCase().includes(termo),
       );
       renderUsers(filtrados);
     } else {
@@ -315,7 +348,7 @@ function renderTasks(listaParaMostrar: TarefaClass[] = listaTarefas) {
     btnDel.onclick = (e) => {
       e.stopPropagation();
       const confirmar = confirm(
-        "Tem a certeza que deseja excluir esta tarefa?"
+        "Tem a certeza que deseja excluir esta tarefa?",
       );
       if (confirmar) {
         const index = listaTarefas.indexOf(task);
@@ -336,7 +369,7 @@ if (inTaskSearch) {
   inTaskSearch.addEventListener("input", () => {
     const termo = inTaskSearch.value.toLowerCase();
     const tarefasFiltradas = listaTarefas.filter((t) =>
-      t.titulo.toLowerCase().includes(termo)
+      t.titulo.toLowerCase().includes(termo),
     );
     renderTasks(tarefasFiltradas);
   });
@@ -357,7 +390,7 @@ btnAddUser.addEventListener("click", () => {
   const novoUser = new UtilizadorClass(
     Date.now(),
     inUserNome.value,
-    inUserEmail.value
+    inUserEmail.value,
   );
   listaUtilizadores.push(novoUser);
 
@@ -390,7 +423,7 @@ btnAddTask.addEventListener("click", () => {
     Date.now(),
     texto,
     selTaskCat.value as Categoria,
-    responsavel
+    responsavel,
   );
 
   listaTarefas.push(novaTarefa);
@@ -410,7 +443,7 @@ btnSortTask.addEventListener("click", () => {
   if (inTaskSearch && inTaskSearch.value !== "") {
     const termo = inTaskSearch.value.toLowerCase();
     const filtradas = listaTarefas.filter((tarefa) =>
-      tarefa.titulo.toLowerCase().includes(termo)
+      tarefa.titulo.toLowerCase().includes(termo),
     );
     renderTasks(filtradas);
   } else {
@@ -420,22 +453,36 @@ btnSortTask.addEventListener("click", () => {
 
 // Dados Iniciais Falsos (19 - autonomo)
 function loadInitialData(): void {
+  const fakeData = [
+    {
+      id: 1,
+      name: "Daniel Moraes",
+      email: "daniel.moraesa@gmail.com",
+      active: true,
+    },
+    { id: 2, name: "Tais Dias", email: "tais.diasc@gmail.com", active: false },
+    {
+      id: 3,
+      name: "Aurora Almeida",
+      email: "aurora.almeida@gmail.com",
+      active: true,
+    },
+    {
+      id: 4,
+      name: "Gabriella Ayres",
+      email: "gabriella.ayres@gmail.com",
+      active: true,
+    },
+    { id: 5, name: "Débora Andrade", email: "debora@gmail.com", active: true },
+  ];
 
-    const fakeData = [
-        { id: 1, name: "Daniel Moraes", email: "daniel.moraesa@gmail.com", active: true },
-        { id: 2, name: "Tais Dias", email: "tais.diasc@gmail.com", active: false },
-        { id: 3, name: "Aurora Almeida", email: "aurora.almeida@gmail.com", active: true },
-        { id: 4, name: "Gabriella Ayres", email: "gabriella.ayres@gmail.com", active: true },
-        { id: 5, name: "Débora Andrade", email: "debora@gmail.com", active: true }
-    ];
+  fakeData.forEach((data) => {
+    const newUser = new UtilizadorClass(data.id, data.name, data.email);
+    newUser.ativo = data.active;
+    listaUtilizadores.push(newUser);
+  });
 
-    fakeData.forEach(data => {
-        const newUser = new UtilizadorClass(data.id, data.name, data.email);
-        newUser.ativo = data.active;
-        listaUtilizadores.push(newUser);
-    });
-
-    renderUsers();
+  renderUsers();
 }
 
 loadInitialData();
