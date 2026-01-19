@@ -67,7 +67,18 @@
         <main class="panel task-panel">
           <div class="task-header">
             <h2>2. Tarefas do Projeto</h2>
-            <span id="contador_tarefas" class="badge">Total: 0</span>
+            <span id="contador_tarefas" style="display: none"></span>
+          </div>
+
+          <div class="stats-box">
+            <div class="stat-item">
+              <small>Pendentes</small>
+              <strong id="stat_task_pending">0</strong>
+            </div>
+            <div class="stat-item">
+              <small>Concluídas</small>
+              <strong id="stat_task_completed">0</strong>
+            </div>
           </div>
 
           <div class="assignment-box">

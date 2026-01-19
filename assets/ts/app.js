@@ -43,9 +43,12 @@ const inTaskSearch = document.getElementById("task_search");
 const pMsgErro = document.getElementById("msg_erro");
 const spanEstado = document.getElementById("estado_msg");
 const spanContador = document.getElementById("contador_tarefas");
-// Elementos das Estatísticas
+// Elementos das Estatísticas (Utilizadores)
 const spanTotalUsers = document.getElementById("stat_total_users");
 const spanPercentActive = document.getElementById("stat_percent_active");
+// Elementos das Estatísticas (Tarefas) - NOVOS
+const statTaskPending = document.getElementById("stat_task_pending");
+const statTaskCompleted = document.getElementById("stat_task_completed");
 // Função do 'Autónomo' para gerir erros
 function mostrarErro(mensagem) {
     pMsgErro.textContent = mensagem;
@@ -55,7 +58,12 @@ function mostrarErro(mensagem) {
 function atualizarEstadoSistema() {
     const totalConcluidas = listaTarefas.filter((t) => t.concluida === true).length;
     const totalPendentes = listaTarefas.length - totalConcluidas;
-    spanContador.textContent = `Pendentes: ${totalPendentes} | Concluídas: ${totalConcluidas}`;
+    // Atualiza as novas caixinhas
+    if (statTaskPending)
+        statTaskPending.textContent = totalPendentes.toString();
+    if (statTaskCompleted)
+        statTaskCompleted.textContent = totalConcluidas.toString();
+    // Mensagens de texto (opcional manter)
     if (listaTarefas.length === 0) {
         spanEstado.textContent = "Sem tarefas pendentes 😴";
         spanEstado.style.color = "gray";
@@ -103,7 +111,6 @@ function atualizarEstatisticas() {
         spanTotalUsers.textContent = total.toString();
     }
     if (spanPercentActive) {
-        // toFixed(0) para arredondar (ex: 33%), ou toFixed(1) para uma casa decimal (33.3%)
         spanPercentActive.textContent = `${percentagem.toFixed(0)}%`;
     }
 }
@@ -118,7 +125,7 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         spanUserInactive.textContent = totalInativos.toString();
     listaParaMostrar.forEach((user) => {
         const div = document.createElement("div");
-        // Define a classe inicial (com blur)
+        // Define a classe inicial (com blur) e cursor
         div.className = "user-card is-blurred";
         div.style.cursor = "pointer";
         // Estilos do layout
@@ -128,7 +135,6 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         div.style.gap = "10px";
         const btnTexto = user.ativo ? "Desativar" : "Ativar";
         const btnCor = user.ativo ? "#b2bec3" : "#00b894";
-        // REMOVIDO O BOTÃO 'INFOS' DO HTML ABAIXO
         div.innerHTML = `
             <div style="flex: 1">
                 <strong>${user.nome}</strong> <small>(ID: ${user.id})</small>
@@ -150,7 +156,7 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
                 </button>
             </div>
         `;
-        // --- MANTIDO: LÓGICA DO CLIQUE (Alternar Blur) ---
+        // --- LÓGICA DO CLIQUE (Alternar Blur) ---
         div.onclick = () => {
             // O toggle adiciona a classe se não tiver, e remove se tiver
             div.classList.toggle("is-blurred");
@@ -158,14 +164,14 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         // Botões de Ação (Ativar/Desativar)
         const btnToggle = div.querySelector(".btn-toggle-user");
         btnToggle.onclick = (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Impede o clique de afetar o blur
             user.ativo = !user.ativo;
             renderUsers();
         };
         // Botão Excluir
         const btnDel = div.querySelector(".btn-del-user");
         btnDel.onclick = (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Impede o clique de afetar o blur
             const confirmar = confirm(`Tens a certeza que queres apagar o ${user.nome}?`);
             if (confirmar) {
                 const index = listaUtilizadores.indexOf(user);
@@ -178,8 +184,7 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         divUserList.appendChild(div);
     });
     atualizarSelectResponsaveis();
-    if (typeof atualizarEstatisticas === "function")
-        atualizarEstatisticas();
+    atualizarEstatisticas();
 }
 // EVENTO: PESQUISA UTILIZADOR
 if (inUserSearch) {

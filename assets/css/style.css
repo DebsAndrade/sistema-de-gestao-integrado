@@ -63,7 +63,7 @@ h2 {
   padding-bottom: 5px;
 }
 
-/* Estilo para Estatísticas (Ex18) */
+/* Estilo para Estatísticas (Usado em Utilizadores e Tarefas) */
 .stats-box {
   display: flex;
   justify-content: space-between;
