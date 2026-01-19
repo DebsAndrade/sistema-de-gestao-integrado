@@ -27,7 +27,7 @@ const inUserEmail = document.getElementById("user_email");
 const btnAddUser = document.getElementById("user_addBtn");
 const divUserList = document.getElementById("user_list");
 const inUserSearch = document.getElementById("user_search");
-// NOVO: Botão Sort e Spans de Contagem
+// Botão Sort e Spans de Contagem
 const btnSortUser = document.getElementById("user_sortBtn");
 const spanUserActive = document.getElementById("count_active");
 const spanUserInactive = document.getElementById("count_inactive");
@@ -97,7 +97,7 @@ function atualizarEstatisticas() {
             spanPercentActive.textContent = "0%";
         return;
     }
-    const ativos = listaUtilizadores.filter((u) => u.ativo).length;
+    const ativos = listaUtilizadores.filter((utilizador) => utilizador.ativo).length;
     const percentagem = (ativos / total) * 100;
     if (spanTotalUsers) {
         spanTotalUsers.textContent = total.toString();
@@ -116,7 +116,6 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         spanUserActive.textContent = totalAtivos.toString();
     if (spanUserInactive)
         spanUserInactive.textContent = totalInativos.toString();
-    // 2. DESENHAR A LISTA
     listaParaMostrar.forEach((user) => {
         const div = document.createElement("div");
         div.className = "user-card";
