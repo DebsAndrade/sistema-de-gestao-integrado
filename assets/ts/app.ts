@@ -281,8 +281,8 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
 if (inUserSearch) {
   inUserSearch.addEventListener("input", () => {
     const termo = inUserSearch.value.toLowerCase();
-    const filtrados = listaUtilizadores.filter((u) =>
-      u.nome.toLowerCase().includes(termo),
+    const filtrados = listaUtilizadores.filter((utilizador) =>
+      utilizador.nome.toLowerCase().includes(termo),
     );
     renderUsers(filtrados);
   });
