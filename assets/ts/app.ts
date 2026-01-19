@@ -106,6 +106,12 @@ const spanTotalUsers = document.getElementById(
 const spanPercentActive = document.getElementById(
   "stat_percent_active",
 ) as HTMLElement;
+// Elementos do Modal
+const modalOverlay = document.getElementById("modal_overlay") as HTMLDivElement;
+const modalBody = document.getElementById("modal_body") as HTMLDivElement;
+const btnCloseModal = document.getElementById(
+  "btn_close_modal",
+) as HTMLSpanElement;
 
 // Função do 'Autónomo' para gerir erros
 function mostrarErro(mensagem: string): void {
@@ -164,7 +170,9 @@ function atualizarEstatisticas(): void {
     return;
   }
 
-  const ativos = listaUtilizadores.filter((utilizador) => utilizador.ativo).length;
+  const ativos = listaUtilizadores.filter(
+    (utilizador) => utilizador.ativo,
+  ).length;
   const percentagem = (ativos / total) * 100;
 
   if (spanTotalUsers) {
@@ -177,10 +185,35 @@ function atualizarEstatisticas(): void {
   }
 }
 
+// Funções do Modal
+function fecharModal() {
+  if (modalOverlay) modalOverlay.style.display = "none";
+}
+
+if (btnCloseModal) btnCloseModal.onclick = fecharModal;
+if (modalOverlay) {
+  modalOverlay.onclick = (e) => {
+    if (e.target === modalOverlay) fecharModal();
+  };
+}
+
+function abrirModalUsuario(u: UtilizadorClass) {
+  if (!modalBody || !modalOverlay) return;
+  const statusIcon = u.ativo ? "🟢" : "🔴";
+  modalBody.innerHTML = `
+    <p><strong>ID:</strong> ${u.id}</p>
+    <p><strong>Nome:</strong> ${u.nome}</p>
+    <p><strong>Email:</strong> ${u.email}</p>
+    <hr>
+    <p><strong>Status:</strong> ${statusIcon} ${u.ativo ? "Ativo" : "Inativo"}</p>
+  `;
+  modalOverlay.style.display = "flex";
+}
+
 function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
   divUserList.innerHTML = "";
 
-  // Conta sempre com base na lista TOTAL (listaUtilizadores), e não na filtrada
+  // Lógica de contagem
   const totalAtivos = listaUtilizadores.filter((u) => u.ativo === true).length;
   const totalInativos = listaUtilizadores.length - totalAtivos;
 
@@ -189,8 +222,12 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
 
   listaParaMostrar.forEach((user) => {
     const div = document.createElement("div");
-    div.className = "user-card";
 
+    // Define a classe inicial (com blur)
+    div.className = "user-card is-blurred";
+    div.style.cursor = "pointer";
+
+    // Estilos do layout
     div.style.display = "flex";
     div.style.justifyContent = "space-between";
     div.style.alignItems = "center";
@@ -199,6 +236,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
     const btnTexto = user.ativo ? "Desativar" : "Ativar";
     const btnCor = user.ativo ? "#b2bec3" : "#00b894";
 
+    // Adicionámos o botão info para o modal
     div.innerHTML = `
             <div style="flex: 1">
                 <strong>${user.nome}</strong> <small>(ID: ${user.id})</small>
@@ -211,6 +249,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
             </div>
             
             <div style="display:flex; flex-direction:column; gap:5px;">
+                <button class="btn-info" style="background:${btnCor}; color:white; border:none; width:80px; padding:5px 0; border-radius:4px; cursor:pointer; text-align:center;">Infos</button>
                 <button class="btn-toggle-user" style="background:${btnCor}; color:white; border:none; width:80px; padding:5px 0; border-radius:4px; cursor:pointer; text-align:center;">
                     ${btnTexto}
                 </button>
@@ -221,16 +260,33 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
             </div>
         `;
 
+    // --- MUDANÇA NA LÓGICA DO CLIQUE (Alternar Blur) ---
+    div.onclick = () => {
+      // O toggle adiciona a classe se não tiver, e remove se tiver
+      div.classList.toggle("is-blurred");
+    };
+
+    // --- NOVO: Lógica para abrir o Modal no botão ℹ️ ---
+    const btnInfo = div.querySelector(".btn-info") as HTMLButtonElement;
+    btnInfo.onclick = (e) => {
+      e.stopPropagation(); // Não deixa o cartão desfocar quando clica no info
+      abrirModalUsuario(user);
+    };
+
+    // Botões de Ação (Ativar/Desativar)
     const btnToggle = div.querySelector(
       ".btn-toggle-user",
     ) as HTMLButtonElement;
-    btnToggle.onclick = () => {
+    btnToggle.onclick = (e) => {
+      e.stopPropagation();
       user.ativo = !user.ativo;
       renderUsers();
     };
 
+    // Botão Excluir
     const btnDel = div.querySelector(".btn-del-user") as HTMLButtonElement;
-    btnDel.onclick = () => {
+    btnDel.onclick = (e) => {
+      e.stopPropagation();
       const confirmar = confirm(
         `Tens a certeza que queres apagar o ${user.nome}?`,
       );
@@ -247,8 +303,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
   });
 
   atualizarSelectResponsaveis();
-
-  atualizarEstatisticas();
+  if (typeof atualizarEstatisticas === "function") atualizarEstatisticas();
 }
 
 // EVENTO: PESQUISA UTILIZADOR
