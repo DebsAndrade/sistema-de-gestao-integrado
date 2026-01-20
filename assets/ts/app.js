@@ -164,14 +164,14 @@ function renderUsers(listaParaMostrar = listaUtilizadores) {
         // Botões de Ação (Ativar/Desativar)
         const btnToggle = div.querySelector(".btn-toggle-user");
         btnToggle.onclick = (e) => {
-            e.stopPropagation(); // Impede o clique de afetar o blur
+            e.stopPropagation();
             user.ativo = !user.ativo;
             renderUsers();
         };
         // Botão Excluir
         const btnDel = div.querySelector(".btn-del-user");
         btnDel.onclick = (e) => {
-            e.stopPropagation(); // Impede o clique de afetar o blur
+            e.stopPropagation();
             const confirmar = confirm(`Tens a certeza que queres apagar o ${user.nome}?`);
             if (confirmar) {
                 const index = listaUtilizadores.indexOf(user);

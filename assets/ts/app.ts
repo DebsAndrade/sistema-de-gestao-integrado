@@ -249,7 +249,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
       ".btn-toggle-user",
     ) as HTMLButtonElement;
     btnToggle.onclick = (e) => {
-      e.stopPropagation(); // Impede o clique de afetar o blur
+      e.stopPropagation();
       user.ativo = !user.ativo;
       renderUsers();
     };
@@ -257,7 +257,7 @@ function renderUsers(listaParaMostrar: UtilizadorClass[] = listaUtilizadores) {
     // Botão Excluir
     const btnDel = div.querySelector(".btn-del-user") as HTMLButtonElement;
     btnDel.onclick = (e) => {
-      e.stopPropagation(); // Impede o clique de afetar o blur
+      e.stopPropagation();
       const confirmar = confirm(
         `Tens a certeza que queres apagar o ${user.nome}?`,
       );
