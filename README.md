@@ -6,6 +6,9 @@ Um sistema de gestão de **Utilizadores e Tarefas** desenvolvido em **TypeScript
 
 Este projeto foi desenvolvido com o objetivo de consolidar conceitos de TypeScript e manipulação dinâmica de interfaces. Permite criar uma base de dados local (em memória) de membros de uma equipa, atribuir-lhes tarefas categorizadas e acompanhar o estado do projeto em tempo real.
 
+🔗 **Acesse o projeto online:** [Sistema de Gestão Integrado](https://debsandrade.github.io/Endure-And-Survive/)
+
+
 ## ✨ Funcionalidades
 
 ### 👤 Gestão de Utilizadores
