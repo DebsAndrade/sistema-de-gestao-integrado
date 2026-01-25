@@ -28,9 +28,9 @@ body {
 
 /* Cabeçalho */
 .app-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
   background: var(--white);
   padding: 15px 25px;
@@ -62,7 +62,23 @@ label {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
-h2 {
+.task-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #eee;
+  background: var(--white);
+  padding-bottom:  5px;
+}
+
+.task-header h2 {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.membro-equipa {
   font-size: 1.1rem;
   margin-bottom: 15px;
   border-bottom: 2px solid #eee;
