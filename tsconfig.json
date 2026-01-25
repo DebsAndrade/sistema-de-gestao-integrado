@@ -6,20 +6,18 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
 
-    /* Configuração Moderna para Vite */
-    "moduleResolution": "Bundler",
+    /* Configuração de Módulos */
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-
-    /* Linting e Verificações */
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
 
-    /* Caminhos (Aliases) - Note que removemos o baseUrl */
+    /* --- AQUI ESTÁ A MÁGICA DOS @ --- */
     "paths": {
       "@models/*": ["./src/models/*"],
       "@services/*": ["./src/services/*"],
