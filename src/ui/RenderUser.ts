@@ -72,9 +72,7 @@ export function renderUsers(
 
   listaParaMostrar.forEach((user) => {
     const div = document.createElement("div");
-
-    // Define a classe inicial (com blur) e cursor
-    div.className = "user-card is-blurred";
+    div.className = "user-card";
     div.style.cursor = "pointer";
 
     // Estilos do layout
@@ -107,12 +105,6 @@ export function renderUsers(
                 </button>
             </div>
         `;
-
-    // --- LÓGICA DO CLIQUE (Alternar Blur) ---
-    div.onclick = () => {
-      // O toggle adiciona a classe se não tiver, e remove se tiver
-      div.classList.toggle("is-blurred");
-    };
 
     // Botões de Ação (Ativar/Desativar)
     const btnToggle = div.querySelector(
