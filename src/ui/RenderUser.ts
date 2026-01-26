@@ -1,6 +1,12 @@
 import { getUtilizadores, adicionarUtilizador } from "@services/UserService";
 import { UtilizadorClass } from "@models/Utilizador";
 
+function mostrarErro(mensagem: string): void {
+  const pMsgErro = document.getElementById("msg_erro_user") as HTMLParagraphElement;
+  pMsgErro.textContent = mensagem;
+  pMsgErro.style.color = "red";
+}
+
 export function atualizarSelectResponsaveis() {
   const selResponsavel = document.getElementById(
     "task_responsavel",
@@ -190,14 +196,16 @@ function addUtilizadorEventListener() {
   ) as HTMLInputElement;
   btnAddUser.addEventListener("click", () => {
     if (!inUserNome.value || !inUserEmail.value) {
-      alert("Preenche os dados do utilizador.");
+      mostrarErro("Preenche os dados do utilizador.");
       return;
     }
 
     if (!inUserEmail.value.includes("@") || !inUserEmail.value.includes(".")) {
-      alert("Email inválido. Precisa ter '@' e '.'");
+      mostrarErro("Email inválido. Precisa ter '@' e '.'");
       return;
     }
+
+    mostrarErro("");
 
     adicionarUtilizador(inUserNome.value, inUserEmail.value);
 
