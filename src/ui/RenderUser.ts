@@ -1,242 +1,178 @@
-import { getUtilizadores, adicionarUtilizador } from "@services/UserService";
-import { UtilizadorClass } from "@models/Utilizador";
+import { UserService } from "../services/UserService";
+import { UserRoles } from "../security/UserRoles";
 
-function mostrarErro(mensagem: string): void {
-  const pMsgErro = document.getElementById("msg_erro_user") as HTMLParagraphElement;
-  pMsgErro.textContent = mensagem;
-  pMsgErro.style.color = "red";
-}
-
-export function atualizarSelectResponsaveis() {
-  const selResponsavel = document.getElementById(
-    "task_responsavel",
-  ) as HTMLSelectElement;
-  const valorAtual = selResponsavel.value;
-  selResponsavel.innerHTML = `<option value="">-- Seleciona um Membro --</option>`;
-
-  getUtilizadores().forEach((user) => {
-    if (user.ativo === true) {
-      const option = document.createElement("option");
-      option.value = user.nome;
-      option.textContent = user.nome;
-      selResponsavel.appendChild(option);
-    }
-  });
-
-  selResponsavel.value = valorAtual;
-}
-
-export function atualizarEstatisticas(): void {
-  const spanTotalUsers = document.getElementById(
-    "stat_total_users",
-  ) as HTMLElement;
-  const spanPercentActive = document.getElementById(
-    "stat_percent_active",
-  ) as HTMLElement;
-  const total = getUtilizadores().length;
-
-  // Evitar divisão por zero
-  if (total === 0) {
-    if (spanTotalUsers) spanTotalUsers.textContent = "0";
-    if (spanPercentActive) spanPercentActive.textContent = "0%";
-    return;
-  }
-
-  const ativos = getUtilizadores().filter(
-    (utilizador) => utilizador.ativo,
-  ).length;
-  const percentagem = (ativos / total) * 100;
-
-  if (spanTotalUsers) {
-    spanTotalUsers.textContent = total.toString();
-  }
-
-  if (spanPercentActive) {
-    spanPercentActive.textContent = `${percentagem.toFixed(0)}%`;
-  }
-}
-
-export function renderUsers(
-  listaParaMostrar: UtilizadorClass[] = getUtilizadores(),
-): void {
-  const divUserList = document.getElementById("user_list") as HTMLDivElement;
-
-  const spanUserActive = document.getElementById(
-    "count_active",
-  ) as HTMLSpanElement;
-  const spanUserInactive = document.getElementById(
-    "count_inactive",
-  ) as HTMLSpanElement;
-  divUserList.innerHTML = "";
-
-  // Lógica de contagem
-  const totalAtivos = getUtilizadores().filter((u) => u.ativo === true).length;
-  const totalInativos = getUtilizadores().length - totalAtivos;
-
-  if (spanUserActive) spanUserActive.textContent = totalAtivos.toString();
-  if (spanUserInactive) spanUserInactive.textContent = totalInativos.toString();
-
-  listaParaMostrar.forEach((user) => {
-    const div = document.createElement("div");
-    div.className = "user-card";
-    div.style.cursor = "pointer";
-
-    // Estilos do layout
-    div.style.display = "flex";
-    div.style.justifyContent = "space-between";
-    div.style.alignItems = "center";
-    div.style.gap = "10px";
-
-    const btnTexto = user.ativo ? "Desativar" : "Ativar";
-    const btnCor = user.ativo ? "#b2bec3" : "#00b894";
-
-    div.innerHTML = `
-            <div style="flex: 1">
-                <strong>${user.nome}</strong> <small>(ID: ${user.id})</small>
-                <br>
-                <small>${user.email}</small>
-                <br>
-                <small style="font-weight:bold; color: ${user.ativo ? "green" : "red"}">
-                    ${user.ativo ? "🟢 Ativo" : "🔴 Inativo"}
-                </small>
-            </div>
-            
-            <div style="display:flex; flex-direction:column; gap:5px;">
-                <button class="btn-toggle-user" style="background:${btnCor}; color:white; border:none; width:80px; padding:5px 0; border-radius:4px; cursor:pointer; text-align:center;">
-                    ${btnTexto}
-                </button>
-
-                <button class="btn-del-user" style="background:#ff7675; color:white; border:none; width:80px; padding:5px 0; border-radius:4px; cursor:pointer; text-align:center;">
-                    Excluir
-                </button>
-            </div>
-        `;
-
-    // Botões de Ação (Ativar/Desativar)
-    const btnToggle = div.querySelector(
-      ".btn-toggle-user",
-    ) as HTMLButtonElement;
-    btnToggle.onclick = (e) => {
-      e.stopPropagation();
-      user.ativo = !user.ativo;
-      renderUsers();
-    };
-
-    // Botão Excluir
-    const btnDel = div.querySelector(".btn-del-user") as HTMLButtonElement;
-    btnDel.onclick = (e) => {
-      e.stopPropagation();
-      const confirmar = confirm(
-        `Tens a certeza que queres apagar o ${user.nome}?`,
-      );
-      if (confirmar) {
-        const index = getUtilizadores().indexOf(user);
-        if (index > -1) {
-          getUtilizadores().splice(index, 1);
-          renderUsers();
-        }
-      }
-    };
-
-    divUserList.appendChild(div);
-  });
-
-  atualizarSelectResponsaveis();
-  atualizarEstatisticas();
-  adcionaSearchListener();
-  ordernarUtilizadoresPorNome();
-  addUtilizadorEventListener();
-}
-
-function adcionaSearchListener() {
-  const inUserSearch = document.getElementById(
-    "user_search",
-  ) as HTMLInputElement;
-  inUserSearch.addEventListener("input", () => {
-    const termo = inUserSearch.value.toLowerCase();
-    const filtrados = getUtilizadores().filter((utilizador) =>
-      utilizador.nome.toLowerCase().includes(termo),
-    );
-    renderUsers(filtrados);
-  });
-}
-
-function ordernarUtilizadoresPorNome() {
-  const btnSortUser = document.getElementById(
-    "user_sortBtn",
-  ) as HTMLButtonElement;
-  const inUserSearch = document.getElementById(
-    "user_search",
-  ) as HTMLInputElement;
-  btnSortUser.addEventListener("click", () => {
-    // Ordena a lista original alfabeticamente
-    getUtilizadores().sort((a, b) => a.nome.localeCompare(b.nome));
-
-    // Se houver pesquisa ativa, mantém o filtro visualmente
-    if (inUserSearch && inUserSearch.value !== "") {
-      const termo = inUserSearch.value.toLowerCase();
-      const filtrados = getUtilizadores().filter((u) =>
-        u.nome.toLowerCase().includes(termo),
-      );
-      renderUsers(filtrados);
-    } else {
-      renderUsers();
-    }
-  });
-}
-
-function addUtilizadorEventListener() {
-  const inUserNome = document.getElementById("user_nome") as HTMLInputElement;
-  const inUserEmail = document.getElementById("user_email") as HTMLInputElement;
-  const btnAddUser = document.getElementById(
-    "user_addBtn",
-  ) as HTMLButtonElement;
-  const inUserSearch = document.getElementById(
-    "user_search",
-  ) as HTMLInputElement;
-  btnAddUser.addEventListener("click", () => {
-    if (!inUserNome.value || !inUserEmail.value) {
-      mostrarErro("Preenche os dados do utilizador.");
-      return;
-    }
-
-    if (!inUserEmail.value.includes("@") || !inUserEmail.value.includes(".")) {
-      mostrarErro("Email inválido. Precisa ter '@' e '.'");
-      return;
-    }
-
-    mostrarErro("");
-
-    adicionarUtilizador(inUserNome.value, inUserEmail.value);
-
-    if (inUserSearch) inUserSearch.value = "";
-
-    renderUsers();
-
-    inUserNome.value = "";
-    inUserEmail.value = "";
-  });
-}
+const userService = new UserService();
 
 export function loadInitialData(): void {
-  const fakeData = [
-    {
-      name: "Daniel Moraes",
-      email: "daniel.moraesa@gmail.com",
-    },
-    { name: "Tais Dias", email: "tais.diasc@gmail.com" },
-    {
-      name: "Aurora Almeida",
-      email: "aurora.almeida@gmail.com"
-    },
-    {
-      name: "Gabriella Ayres",
-      email: "gabriella.ayres@gmail.com"
-    },
-    { name: "Débora Andrade", email: "debora@gmail.com" },
-  ];
-
-  fakeData.forEach((data) => {
-    adicionarUtilizador(data.name, data.email);
-  });
+  // Dados iniciais de exemplo
+  try {
+    userService.addUser("Ana Silva", "ana@empresa.pt", UserRoles.ADMIN);
+    userService.addUser("João Costa", "joao@empresa.pt", UserRoles.GUEST);
+    userService.addUser("Maria Santos", "maria@empresa.pt", UserRoles.MEMBER);
+    console.log("✅ Dados iniciais carregados");
+  } catch (error) {
+    console.error("Erro ao carregar dados:", error);
+  }
 }
+
+export function renderUsers(): void {
+  const userList = document.getElementById("user_list") as HTMLDivElement;
+  const addBtn = document.getElementById("user_addBtn") as HTMLButtonElement;
+  const searchInput = document.getElementById(
+    "user_search",
+  ) as HTMLInputElement;
+  const sortBtn = document.getElementById("user_sortBtn") as HTMLButtonElement;
+  const selectResponsavel = document.getElementById(
+    "task_responsavel",
+  ) as HTMLSelectElement;
+
+  if (!userList || !addBtn) return;
+
+  // Adicionar utilizador
+  addBtn.addEventListener("click", () => {
+    const nomeInput = document.getElementById("user_nome") as HTMLInputElement;
+    const emailInput = document.getElementById(
+      "user_email",
+    ) as HTMLInputElement;
+    const errorMsg = document.getElementById(
+      "msg_erro_user",
+    ) as HTMLParagraphElement;
+
+    const nome = nomeInput.value.trim();
+    const email = emailInput.value.trim();
+
+    errorMsg.textContent = "";
+    errorMsg.style.color = "var(--danger)";
+
+    if (!nome || !email) {
+      errorMsg.textContent = "❌ Preencha todos os campos!";
+      return;
+    }
+
+    try {
+      userService.addUser(nome, email, UserRoles.MEMBER);
+      nomeInput.value = "";
+      emailInput.value = "";
+      errorMsg.style.color = "var(--success)";
+      errorMsg.textContent = "✅ Membro adicionado!";
+      setTimeout(() => (errorMsg.textContent = ""), 2000);
+      displayUsers();
+      updateUserStats();
+      updateResponsavelSelect();
+    } catch (error) {
+      errorMsg.textContent = `❌ ${(error as Error).message}`;
+    }
+  });
+
+  // Pesquisar utilizadores
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value;
+      if (query.trim()) {
+        const filtered = userService.searchUsers(query);
+        displayUsers(filtered);
+      } else {
+        displayUsers();
+      }
+    });
+  }
+
+  // Ordenar utilizadores
+  if (sortBtn) {
+    sortBtn.addEventListener("click", () => {
+      userService.sortUsersByName();
+      displayUsers();
+    });
+  }
+
+  function displayUsers(usersToDisplay = userService.getUsers()): void {
+    userList.innerHTML = "";
+
+    usersToDisplay.forEach((user) => {
+      const card = document.createElement("div");
+      card.className = "user-card";
+
+      const statusIcon = user.isActive() ? "🟢" : "🔴";
+
+      card.innerHTML = `
+                <div>
+                    <strong>${statusIcon} ${user.nome}</strong><br>
+                    <small>${user.email}</small><br>
+                    <small style="color: var(--primary)">${user.role}</small>
+                </div>
+                <div style="display: flex; gap: 5px; flex-direction: column;">
+                    <button class="btn-small" data-action="toggle" data-id="${user.getId()}">
+                        ${user.isActive() ? "Desativar" : "Ativar"}
+                    </button>
+                    <button class="btn-small" data-action="remove" data-id="${user.getId()}" 
+                            style="background: var(--danger)">
+                        Remover
+                    </button>
+                </div>
+            `;
+
+      // Toggle status
+      const toggleBtn = card.querySelector(
+        '[data-action="toggle"]',
+      ) as HTMLButtonElement;
+      toggleBtn.addEventListener("click", () => {
+        userService.toggleUserStatus(user.getId());
+        displayUsers();
+        updateUserStats();
+        updateResponsavelSelect();
+      });
+
+      // Remover utilizador
+      const removeBtn = card.querySelector(
+        '[data-action="remove"]',
+      ) as HTMLButtonElement;
+      removeBtn.addEventListener("click", () => {
+        if (confirm(`Remover ${user.nome}?`)) {
+          userService.removeUser(user.getId());
+          displayUsers();
+          updateUserStats();
+          updateResponsavelSelect();
+        }
+      });
+
+      userList.appendChild(card);
+    });
+  }
+
+  function updateUserStats(): void {
+    const stats = userService.getStats();
+
+    const totalEl = document.getElementById("stat_total_users");
+    const percentEl = document.getElementById("stat_percent_active");
+    const activeCountEl = document.getElementById("count_active");
+    const inactiveCountEl = document.getElementById("count_inactive");
+
+    if (totalEl) totalEl.textContent = stats.total.toString();
+    if (percentEl) percentEl.textContent = `${stats.percentActive}%`;
+    if (activeCountEl) activeCountEl.textContent = stats.active.toString();
+    if (inactiveCountEl)
+      inactiveCountEl.textContent = stats.inactive.toString();
+  }
+
+  function updateResponsavelSelect(): void {
+    if (!selectResponsavel) return;
+
+    const activeUsers = userService.getActiveUsers();
+    selectResponsavel.innerHTML =
+      '<option value="">-- Seleciona um Membro --</option>';
+
+    activeUsers.forEach((user) => {
+      const option = document.createElement("option");
+      option.value = user.nome;
+      option.textContent = `${user.nome} (${user.role})`;
+      selectResponsavel.appendChild(option);
+    });
+  }
+
+  // Inicializar
+  displayUsers();
+  updateUserStats();
+  updateResponsavelSelect();
+}
+
+export { userService };

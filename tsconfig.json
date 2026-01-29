@@ -21,7 +21,9 @@
     "paths": {
       "@models/*": ["./src/models/*"],
       "@services/*": ["./src/services/*"],
-      "@ui/*": ["./src/ui/*"]
+      "@ui/*": ["./src/ui/*"],
+      "@security/*": ["./src/security/*"],
+      "@tasks/*": ["./src/tasks/*"]
     }
   },
   "include": ["src"]

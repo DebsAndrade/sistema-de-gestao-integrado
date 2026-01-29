@@ -7,6 +7,8 @@ export default defineConfig({
       "@models": path.resolve(__dirname, "./src/models"),
       "@services": path.resolve(__dirname, "./src/services"),
       "@ui": path.resolve(__dirname, "./src/ui"),
+      "@security": path.resolve(__dirname, "./src/security"),
+      "@tasks": path.resolve(__dirname, "./src/tasks"),
     },
   },
 });
