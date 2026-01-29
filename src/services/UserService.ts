@@ -1,5 +1,5 @@
 import { UserClass } from '../models/UserClass';
-import { UserRole } from '../security/UserRole';
+import { UserRoles } from '../security/UserRoles';
 import { HistoryLog } from '../logs/HistoryLog';
 import { NotificationService } from '../notifications/NotificationService';
 
@@ -13,7 +13,7 @@ export class UserService {
         this.notificationService = new NotificationService();
     }
 
-    addUser(nome: string, email: string, role: UserRole = UserRole.MEMBER): UserClass {
+    addUser(nome: string, email: string, role: UserRoles = UserRoles.MEMBER): UserClass {
         const id = Date.now();
         const newUser = new UserClass(id, nome, email, role);
         this.users.push(newUser);
@@ -43,7 +43,7 @@ export class UserService {
     toggleUserStatus(id: number): void {
         const user = this.getUserById(id);
         if (user) {
-            user.toggleActive();
+            (user as any).active = !user.isActive();
             const status = user.isActive() ? 'ativo' : 'inativo';
             this.historyLog.addLog(`Status alterado: ${user.nome} → ${status}`);
         }

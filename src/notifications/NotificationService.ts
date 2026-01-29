@@ -1,5 +1,5 @@
 import { UserClass } from '../models/UserClass';
-import { UserRole } from '../security/UserRole';
+import { UserRoles } from '../security/UserRoles';
 
 export class NotificationService {
     notifyUser(userId: number, message: string): void {
@@ -15,7 +15,7 @@ export class NotificationService {
     }
 
     notifyAdmins(message: string, users: UserClass[]): void {
-        const admins = users.filter(u => u.role === UserRole.ADMIN);
+        const admins = users.filter(u => u.role === UserRoles.ADMIN);
         console.log(`🚨 Notificação ADMIN (${admins.length} admins): ${message}`);
         admins.forEach(admin => {
             console.log(`  → ${admin.nome} (${admin.email})`);
@@ -23,8 +23,8 @@ export class NotificationService {
     }
 
     notifyManagers(message: string, users: UserClass[]): void {
-        const managers = users.filter(u => 
-            u.role === UserRole.ADMIN || u.role === UserRole.MANAGER
+        const managers = users.filter(u =>
+            u.role === UserRoles.ADMIN || u.role === UserRoles.GUEST
         );
         console.log(`👔 Notificação MANAGERS (${managers.length}): ${message}`);
         managers.forEach(manager => {

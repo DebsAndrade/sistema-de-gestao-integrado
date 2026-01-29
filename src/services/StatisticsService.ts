@@ -1,7 +1,7 @@
 import { ITask } from '../tasks/ITask';
 import { UserClass } from '../models/UserClass';
 import { TaskStatus } from '../tasks/TaskStatus';
-import { UserRole } from '../security/UserRole';
+import { UserRoles } from '../security/UserRoles';
 
 export class StatisticsService {
     /**
@@ -100,12 +100,11 @@ export class StatisticsService {
     /**
      * Agrupa utilizadores por role
      */
-    usersByRole(users: UserClass[]): Record<UserRole, number> {
-        const stats: Record<UserRole, number> = {
-            [UserRole.ADMIN]: 0,
-            [UserRole.MANAGER]: 0,
-            [UserRole.MEMBER]: 0,
-            [UserRole.VIEWER]: 0
+    usersByRole(users: UserClass[]): Record<UserRoles, number> {
+        const stats: Record<UserRoles, number> = {
+            [UserRoles.ADMIN]: 0,
+            [UserRoles.GUEST]: 0,
+            [UserRoles.MEMBER]: 0,
         };
 
         users.forEach(user => {

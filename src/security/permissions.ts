@@ -1,17 +1,17 @@
-import { UserRole } from './UserRole';
+import { UserRoles } from './UserRoles';
 
-export function canCreateTask(role: UserRole): boolean {
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.MEMBER;
+export function canCreateTask(role: UserRoles): boolean {
+    return role === UserRoles.ADMIN || role === UserRoles.GUEST || role === UserRoles.MEMBER;
 }
 
-export function canEditTask(role: UserRole): boolean {
-    return role === UserRole.ADMIN || role === UserRole.MANAGER || role === UserRole.MEMBER;
+export function canEditTask(role: UserRoles): boolean {
+    return role === UserRoles.ADMIN || role === UserRoles.GUEST || role === UserRoles.MEMBER;
 }
 
-export function canDeleteTask(role: UserRole): boolean {
-    return role === UserRole.ADMIN || role === UserRole.MANAGER;
+export function canDeleteTask(role: UserRoles): boolean {
+    return role === UserRoles.ADMIN || role === UserRoles.GUEST;
 }
 
-export function canAssignTask(role: UserRole): boolean {
-    return role === UserRole.ADMIN || role === UserRole.MANAGER;
+export function canAssignTask(role: UserRoles): boolean {
+    return role === UserRoles.ADMIN || role === UserRoles.GUEST;
 }

@@ -1,209 +1,235 @@
-import { adicionarTarefa, getTarefas } from "@services/TaskService";
-import { TarefaClass, Categoria } from "@models/Tarefa";
+import { TaskService } from "../services/TaskService";
 
-function mostrarErro(mensagem: string): void {
-  const pMsgErro = document.getElementById("msg_erro") as HTMLParagraphElement;
-  pMsgErro.textContent = mensagem;
-  pMsgErro.style.color = "red";
-}
+const taskService = new TaskService();
 
-export function atualizarEstadoSistema(): void {
-  const spanEstado = document.getElementById("estado_msg") as HTMLSpanElement;
-  const statTaskPending = document.getElementById(
-    "stat_task_pending",
-  ) as HTMLElement;
-  const statTaskCompleted = document.getElementById(
-    "stat_task_completed",
-  ) as HTMLElement;
-  const totalConcluidas = getTarefas().filter(
-    (tarefa) => tarefa.concluida === true,
-  ).length;
-  const totalPendentes = getTarefas().length - totalConcluidas;
+export function renderTasks(): void {
+  const taskList = document.getElementById("task_list") as HTMLUListElement;
+  const addBtn = document.getElementById("task_addBtn") as HTMLButtonElement;
+  const searchInput = document.getElementById(
+    "task_search",
+  ) as HTMLInputElement;
+  const sortBtn = document.getElementById("task_sortBtn") as HTMLButtonElement;
 
-  // Atualiza as novas caixinhas
-  if (statTaskPending) statTaskPending.textContent = totalPendentes.toString();
-  if (statTaskCompleted)
-    statTaskCompleted.textContent = totalConcluidas.toString();
+  if (!taskList || !addBtn) return;
 
-  // Mensagens de texto (opcional manter)
-  if (getTarefas().length === 0) {
-    spanEstado.textContent = "Sem tarefas pendentes 😴";
-    spanEstado.style.color = "gray";
-  } else if (totalPendentes === 0) {
-    spanEstado.textContent = "Tudo feito! Parabéns! 🎉";
-    spanEstado.style.color = "var(--success)";
-  } else if (totalPendentes < 5) {
-    spanEstado.textContent = "Trabalho a decorrer 🔨";
-    spanEstado.style.color = "orange";
-  } else {
-    spanEstado.textContent = "Muitas tarefas pendentes! 🔥";
-    spanEstado.style.color = "red";
+  // Adicionar tarefa
+  addBtn.addEventListener("click", () => {
+    const input = document.getElementById("task_input") as HTMLInputElement;
+    const selectCategoria = document.getElementById(
+      "task_categoria",
+    ) as HTMLSelectElement;
+    const selectResponsavel = document.getElementById(
+      "task_responsavel",
+    ) as HTMLSelectElement;
+    const errorMsg = document.getElementById(
+      "msg_erro",
+    ) as HTMLParagraphElement;
+
+    const texto = input.value.trim();
+    const categoria = selectCategoria.value as
+      | "trabalho"
+      | "pessoal"
+      | "estudos";
+    const responsavel = selectResponsavel.value;
+
+    errorMsg.textContent = "";
+    errorMsg.style.color = "var(--danger)";
+
+    if (!texto) {
+      errorMsg.textContent = "❌ Digite uma tarefa!";
+      return;
+    }
+
+    if (!responsavel) {
+      errorMsg.textContent = "⚠️ Selecione um responsável!";
+      return;
+    }
+
+    // Criar tarefa genérica por padrão
+    // Para demonstrar polimorfismo, pode criar bug ou feature baseado em palavras-chave
+    let taskType: "task" | "bug" | "feature" = "task";
+    if (
+      texto.toLowerCase().includes("bug") ||
+      texto.toLowerCase().includes("erro")
+    ) {
+      taskType = "bug";
+    } else if (
+      texto.toLowerCase().includes("feature") ||
+      texto.toLowerCase().includes("funcionalidade")
+    ) {
+      taskType = "feature";
+    }
+
+    taskService.createTask(texto, categoria, responsavel, taskType);
+
+    input.value = "";
+    errorMsg.style.color = "var(--success)";
+    errorMsg.textContent = "✅ Tarefa criada!";
+    setTimeout(() => (errorMsg.textContent = ""), 2000);
+
+    displayTasks();
+    updateTaskStats();
+  });
+
+  // Pesquisar tarefas
+  if (searchInput) {
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value;
+      if (query.trim()) {
+        const filtered = taskService.searchTasks(query);
+        displayTasks(filtered);
+      } else {
+        displayTasks();
+      }
+    });
   }
-}
 
-export function renderTasks(
-  listaParaMostrar: TarefaClass[] = getTarefas(),
-): void {
-  const ulTaskList = document.getElementById("task_list") as HTMLUListElement;
-  ulTaskList.innerHTML = "";
+  // Ordenar tarefas
+  if (sortBtn) {
+    sortBtn.addEventListener("click", () => {
+      taskService.sortTasksByTitle();
+      displayTasks();
+    });
+  }
 
-  listaParaMostrar.forEach((task) => {
-    const li = document.createElement("li");
-    li.className = "task-item";
+  function displayTasks(tasksToDisplay = taskService.getTasks()): void {
+    taskList.innerHTML = "";
 
-    let corBorda = "#ccc";
-    if (task.categoria === "trabalho") corBorda = "#ff7675";
-    if (task.categoria === "pessoal") corBorda = "#00b894";
-    if (task.categoria === "estudos") corBorda = "#0984e3";
+    if (tasksToDisplay.length === 0) {
+      taskList.innerHTML =
+        '<li style="text-align: center; color: #999;">Nenhuma tarefa ainda</li>';
+      return;
+    }
 
-    if (task.concluida) corBorda = "#b2bec3";
+    tasksToDisplay.forEach((task) => {
+      const li = document.createElement("li");
+      li.className = "task-item";
 
-    li.style.borderLeftColor = corBorda;
+      // Cor da borda por categoria
+      const borderColors = {
+        trabalho: "#0984e3",
+        pessoal: "#00b894",
+        estudos: "#fdcb6e",
+      };
+      li.style.borderLeftColor = borderColors[task.categoria];
 
-    const estiloTitulo = task.concluida
-      ? "text-decoration: line-through; color: #b2bec3;"
-      : "";
+      // Ícone por tipo de tarefa
+      const typeIcons = {
+        bug: "🐛",
+        feature: "✨",
+        task: "📋",
+      };
+      const typeIcon =
+        typeIcons[task.getType() as keyof typeof typeIcons] || "📋";
 
-    const dataMsg =
-      task.concluida && task.dataConclusao
-        ? `<span style="color:green; font-size:0.8rem; margin-left:5px;">(Concluída em: ${task.dataConclusao.toLocaleString()})</span>`
+      const completedStyle = task.completed
+        ? "text-decoration: line-through; opacity: 0.6;"
         : "";
 
-    li.innerHTML = `
-        <div class="task-content" style="flex: 1; cursor: pointer;">
-            <strong style="${estiloTitulo}">${task.titulo}</strong>
-            ${dataMsg}
-            <br>
-            <small style="color:#666">👤 ${task.responsavelNome} | 🏷️ ${task.categoria.toUpperCase()}</small>
-        </div>
+      const dataConclusao = task.dataConclusao
+        ? `<br><small style="color: var(--success)">✅ ${task.dataConclusao.toLocaleString("pt-PT")}</small>`
+        : "";
 
-        <div style="display:flex; gap: 3px;">
-            <button class="btn-edit" style="background:transparent; color:red; width:auto; font-size:1.2rem;">✏️</button>
-            <button class="btn-del" style="background:transparent; color:red; width:auto; font-size:1.2rem;">❌</button>
-        </div>
-    `;
+      li.innerHTML = `
+                <div style="${completedStyle}">
+                    <strong>${typeIcon} ${task.title}</strong>
+                    <br>
+                    <small>
+                        <span style="background: ${borderColors[task.categoria]}; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.7rem;">
+                            ${task.categoria.toUpperCase()}
+                        </span>
+                        ${task.responsavelNome ? `| 👤 ${task.responsavelNome}` : ""}
+                        | 🔖 ${task.getType().toUpperCase()}
+                    </small>
+                    ${dataConclusao}
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <button class="btn-small" data-action="toggle" data-id="${task.id}" 
+                            style="background: ${task.completed ? "var(--blue)" : "var(--success)"}">
+                        ${task.completed ? "↩️ Reabrir" : "✅ Concluir"}
+                    </button>
+                    <button class="btn-small" data-action="edit" data-id="${task.id}">
+                        ✏️
+                    </button>
+                    <button class="btn-small" data-action="delete" data-id="${task.id}" 
+                            style="background: var(--danger)">
+                        🗑️
+                    </button>
+                </div>
+            `;
 
-    const divContent = li.querySelector(".task-content") as HTMLDivElement;
-    divContent.onclick = () => {
-      task.concluida = !task.concluida;
+      // Toggle concluída
+      const toggleBtn = li.querySelector(
+        '[data-action="toggle"]',
+      ) as HTMLButtonElement;
+      toggleBtn.addEventListener("click", () => {
+        taskService.toggleTaskComplete(task.id);
+        displayTasks();
+        updateTaskStats();
+      });
 
-      if (task.concluida) {
-        task.dataConclusao = new Date();
-      } else {
-        task.dataConclusao = undefined;
-      }
-      renderTasks();
-      atualizarEstadoSistema();
-    };
-
-    const btnEdit = li.querySelector(".btn-edit") as HTMLButtonElement;
-    btnEdit.onclick = (e) => {
-      e.stopPropagation();
-      const novoTitulo = prompt("Editar título da tarefa:", task.titulo);
-      if (novoTitulo !== null && novoTitulo.trim() !== "") {
-        task.titulo = novoTitulo;
-        renderTasks();
-      }
-    };
-
-    const btnDel = li.querySelector(".btn-del") as HTMLButtonElement;
-    btnDel.onclick = (e) => {
-      e.stopPropagation();
-      const confirmar = confirm(
-        "Tem a certeza que deseja excluir esta tarefa?",
-      );
-      if (confirmar) {
-        const index = getTarefas().indexOf(task);
-        if (index > -1) {
-          getTarefas().splice(index, 1);
-          renderTasks();
-          atualizarEstadoSistema();
+      // Editar tarefa
+      const editBtn = li.querySelector(
+        '[data-action="edit"]',
+      ) as HTMLButtonElement;
+      editBtn.addEventListener("click", () => {
+        const newTitle = prompt("Novo título:", task.title);
+        if (newTitle?.trim()) {
+          taskService.updateTask(task.id, newTitle.trim());
+          displayTasks();
         }
+      });
+
+      // Remover tarefa
+      const deleteBtn = li.querySelector(
+        '[data-action="delete"]',
+      ) as HTMLButtonElement;
+      deleteBtn.addEventListener("click", () => {
+        if (confirm(`Remover "${task.title}"?`)) {
+          taskService.deleteTask(task.id);
+          displayTasks();
+          updateTaskStats();
+        }
+      });
+
+      taskList.appendChild(li);
+    });
+  }
+
+  function updateTaskStats(): void {
+    const stats = taskService.getStats();
+
+    const pendingEl = document.getElementById("stat_task_pending");
+    const completedEl = document.getElementById("stat_task_completed");
+    const estadoMsg = document.getElementById("estado_msg");
+
+    if (pendingEl) pendingEl.textContent = stats.pending.toString();
+    if (completedEl) completedEl.textContent = stats.completed.toString();
+
+    // Mensagem motivacional
+    if (estadoMsg) {
+      if (stats.total === 0) {
+        estadoMsg.textContent = "Sem tarefas pendentes 😴";
+        estadoMsg.style.color = "var(--primary)";
+      } else if (stats.completed === stats.total) {
+        estadoMsg.textContent = "🎉 Tudo Concluído!";
+        estadoMsg.style.color = "var(--success)";
+      } else if (stats.percentCompleted >= 70) {
+        estadoMsg.textContent = "🚀 Quase lá!";
+        estadoMsg.style.color = "var(--blue)";
+      } else if (stats.percentCompleted >= 30) {
+        estadoMsg.textContent = "💪 Bom trabalho!";
+        estadoMsg.style.color = "var(--secondary)";
+      } else {
+        estadoMsg.textContent = "📝 Em andamento";
+        estadoMsg.style.color = "var(--primary)";
       }
-    };
-
-    ulTaskList.appendChild(li);
-  });
-
-  adicionaSearchListener();
-  addTarefaEventListener();
-  ordernarTarefasPorTitulo();
-  atualizarEstadoSistema();
-}
-
-function adicionaSearchListener() {
-  const inTaskSearch = document.getElementById(
-    "task_search",
-  ) as HTMLInputElement;
-  inTaskSearch.addEventListener("input", () => {
-    const termo = inTaskSearch.value.toLowerCase();
-    const tarefasFiltradas = getTarefas().filter((tarefa) =>
-      tarefa.titulo.toLowerCase().includes(termo),
-    );
-    renderTasks(tarefasFiltradas);
-  });
-}
-
-function addTarefaEventListener() {
-  const btnAddTask = document.getElementById(
-    "task_addBtn",
-  ) as HTMLButtonElement;
-  const inTaskInput = document.getElementById("task_input") as HTMLInputElement;
-  const selTaskCat = document.getElementById(
-    "task_categoria",
-  ) as HTMLSelectElement;
-  const selResponsavel = document.getElementById(
-    "task_responsavel",
-  ) as HTMLSelectElement;
-  const inTaskSearch = document.getElementById(
-    "task_search",
-  ) as HTMLInputElement;
-  btnAddTask.addEventListener("click", () => {
-    const texto = inTaskInput.value;
-    const responsavel = selResponsavel.value;
-    const categoria = selTaskCat.value as Categoria;
-
-    if (texto.length < 3) {
-      mostrarErro("❌ A tarefa deve ter pelo menos 3 caracteres.");
-      return;
     }
+  }
 
-    if (responsavel === "") {
-      mostrarErro("⚠️ Tens de escolher um membro da equipa.");
-      return;
-    }
-
-    mostrarErro("");
-
-    adicionarTarefa(texto, categoria, responsavel);
-
-    if (inTaskSearch) inTaskSearch.value = "";
-
-    renderTasks();
-    atualizarEstadoSistema();
-
-    inTaskInput.value = "";
-  });
+  // Inicializar
+  displayTasks();
+  updateTaskStats();
 }
 
-function ordernarTarefasPorTitulo() {
-  const btnSortTask = document.getElementById(
-    "task_sortBtn",
-  ) as HTMLButtonElement;
-  const inTaskSearch = document.getElementById(
-    "task_search",
-  ) as HTMLInputElement;
-  btnSortTask.addEventListener("click", () => {
-    getTarefas().sort((a, b) => a.titulo.localeCompare(b.titulo));
-
-    if (inTaskSearch && inTaskSearch.value !== "") {
-      const termo = inTaskSearch.value.toLowerCase();
-      const filtradas = getTarefas().filter((tarefa) =>
-        tarefa.titulo.toLowerCase().includes(termo),
-      );
-      renderTasks(filtradas);
-    } else {
-      renderTasks();
-    }
-  });
-}
+export { taskService };
