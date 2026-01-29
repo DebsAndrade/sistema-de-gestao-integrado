@@ -1,5 +1,5 @@
 export class HistoryLog {
-  private static readonly instance: HistoryLog; // Bónus: Singleton
+  private static readonly instance: HistoryLog;
   private readonly logs: string[] = [];
 
   addLog(msg: string) {
