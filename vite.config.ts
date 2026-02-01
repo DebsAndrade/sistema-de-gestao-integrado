@@ -9,6 +9,7 @@ export default defineConfig({
       "@ui": path.resolve(__dirname, "./src/ui"),
       "@security": path.resolve(__dirname, "./src/security"),
       "@tasks": path.resolve(__dirname, "./src/tasks"),
+      "@utils": path.resolve(__dirname, "./src/utils"),
     },
   },
 });

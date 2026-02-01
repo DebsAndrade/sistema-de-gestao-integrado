@@ -23,7 +23,8 @@
       "@services/*": ["./src/services/*"],
       "@ui/*": ["./src/ui/*"],
       "@security/*": ["./src/security/*"],
-      "@tasks/*": ["./src/tasks/*"]
+      "@tasks/*": ["./src/tasks/*"],
+      "@utils/*": ["./src/utils/*"]
     }
   },
   "include": ["src"]
