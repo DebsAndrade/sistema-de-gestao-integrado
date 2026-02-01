@@ -3,6 +3,10 @@ import { IdGenerator } from "@utils/IdGenerator";
 import { SystemLogger } from "../logs/SystemLogger";
 import { GlobalValidators } from "@utils/GlobalValidators";
 import { BusinessRules } from "@services/BusinessRules";
+import { EntityList } from "@utils/EntityList";
+import { SimpleCache } from "@utils/SimpleCache";
+import { Favorites } from "@utils/Favorites";
+import { Paginator } from "@utils/Paginator";
 
 export function mainTest() {
   // Configurar sistema
@@ -24,6 +28,38 @@ export function mainTest() {
   SystemLogger.log(`Email validation for ${email}: ${isEmailValid}`);
   SystemLogger.log(`Can complete task ${taskId}: ${canCompleteTask}`);
 
+  // Testar EntityList genérica
+  const userList = new EntityList<{ id: number; name: string }>();
+  userList.add({ id: 1, name: "Natália" });
+  userList.add({ id: 2, name: "Rebeca" });
+
+  const taskList = new EntityList<{ id: number; title: string }>();
+  taskList.add({ id: 101, title: "Task One" });
+
+  // Cache simples
+  const userCache = new SimpleCache<number, { id: number; name: string }>();
+  userCache.set(1, { id: 1, name: "Gabriella" });
+
+  const taskCache = new SimpleCache<number, { id: number; title: string }>();
+  taskCache.set(10, { id: 10, title: "Task One" });
+
+  // Favotires test
+  const favUsers = new Favorites<{ id: number; name: string }>();
+  const user1 = { id: 1, name: "Taís" };
+  const user2 = { id: 2, name: "Daniel" };
+  favUsers.add(user1);
+  favUsers.add(user2);
+  favUsers.remove(user1);
+
+  const favTasks = new Favorites<{ id: number; title: string }>();
+  const task1 = { id: 101, title: "Task One" };
+  favTasks.add(task1);
+
+  // Pagination test
+  const paginator = new Paginator();
+  const page1 = paginator.paginate(userList.getAll(), 1, 2);
+  const page2 = paginator.paginate(userList.getAll(), 2, 2);
+
   // Imprimir resultados
   console.log("System Config Info:", SystemConfig.getInfo());
   console.log("Generated User ID:", userId);
@@ -31,4 +67,12 @@ export function mainTest() {
   console.log(`Is email "${email}" valid?`, isEmailValid);
   console.log(`Can complete task ${taskId}?`, canCompleteTask);
   console.log("System Logs:", SystemLogger.getLogs());
+  console.log(userList.getAll());
+  console.log(taskList.getAll());
+  console.log(userCache.get(1));
+  console.log(taskCache.get(10));
+  console.log(favUsers.getAll());
+  console.log(favTasks.exists(task1));
+  console.log(page1);
+  console.log(page2);
 }
