@@ -7,6 +7,10 @@ import { EntityList } from "@utils/EntityList";
 import { SimpleCache } from "@utils/SimpleCache";
 import { Favorites } from "@utils/Favorites";
 import { Paginator } from "@utils/Paginator";
+import { WatcherSystem } from "@utils/WatcherSystem";
+import { PriorityManager } from "@utils/PriorityManager";
+import { RatingSystem } from "@utils/RatingSystem";
+import { DependencyGraph } from "@utils/DependencyGraph"
 
 export function mainTest() {
   // Configurar sistema
@@ -62,6 +66,24 @@ export function mainTest() {
   const page1 = paginator.paginate(userList.getAll(), 1, 2);
   const page2 = paginator.paginate(userList.getAll(), 2, 2);
 
+  // WatcherSystem
+  const watcherSystem = new WatcherSystem();
+  watcherSystem.watch(task1, user1);
+  watcherSystem.watch(task1, user2);
+
+  // PriorityManager
+  const priorityManager = new PriorityManager();
+  priorityManager.setPriority(task1, 5);
+
+  // RatingSystem
+  const ratingSystem = new RatingSystem();
+  ratingSystem.rate(task1, 5);
+  ratingSystem.rate(task1, 3);
+
+  // DependencyGraph
+  const depGraph = new DependencyGraph();
+  depGraph.addDependency(task1);
+
   // Imprimir resultados
   console.log("System Config Info:", SystemConfig.getInfo());
   console.log("Generated User ID:", userId);
@@ -79,4 +101,8 @@ export function mainTest() {
   console.log(favTasks.exists(task1));
   console.log("Aqui está a page 1: ", page1);
   console.log("Aqui está a page 2: ", page2);
+  console.log("Watcher", watcherSystem.getWatchers(task1));
+  console.log(priorityManager.getPriority(task1));
+  console.log(ratingSystem.getAverage(task1));
+  console.log(depGraph.getDependencies(task1));
 }
