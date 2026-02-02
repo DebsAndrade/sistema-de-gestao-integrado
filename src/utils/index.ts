@@ -5,3 +5,7 @@ export * from './GlobalValidators';
 export * from './Favorites';
 export * from './SimpleCache';
 export * from './TagManager';
+export * from './WatcherSystem';
+export * from './PriorityManager';
+export * from './RatingSystem';
+export * from './DependencyGraph';
