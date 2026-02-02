@@ -37,11 +37,13 @@ export function mainTest() {
   taskList.add({ id: 101, title: "Task One" });
 
   // Cache simples
-  const userCache = new SimpleCache<number, { id: number; name: string }>();
+  const userCache = new SimpleCache<number, { id: number; name: string; }>();
   userCache.set(1, { id: 1, name: "Gabriella" });
+  userCache.set(2, { id: 2, name: "Daniel" });
 
   const taskCache = new SimpleCache<number, { id: number; title: string }>();
   taskCache.set(10, { id: 10, title: "Task One" });
+  taskCache.set(20, { id: 20, title: "Task Two" });
 
   // Favotires test
   const favUsers = new Favorites<{ id: number; name: string }>();
@@ -70,9 +72,11 @@ export function mainTest() {
   console.log(userList.getAll());
   console.log(taskList.getAll());
   console.log(userCache.get(1));
+  console.log(userCache.get(2));
   console.log(taskCache.get(10));
+  console.log(taskCache.get(20));
   console.log(favUsers.getAll());
   console.log(favTasks.exists(task1));
-  console.log(page1);
-  console.log(page2);
+  console.log("Aqui está a page 1: ", page1);
+  console.log("Aqui está a page 2: ", page2);
 }
