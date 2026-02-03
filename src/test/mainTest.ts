@@ -82,7 +82,8 @@ export function mainTest() {
 
   // DependencyGraph
   const depGraph = new DependencyGraph();
-  depGraph.addDependency(task1);
+  const task2 = { id: 102, title: "Task Two" };
+  depGraph.addDependency(task1, task2);
 
   // Imprimir resultados
   console.log("System Config Info:", SystemConfig.getInfo());
