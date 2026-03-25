@@ -28,9 +28,9 @@ body {
 
 /* Cabeçalho */
 .app-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  display: flex;
+  justify-content: center;
   margin-bottom: 20px;
   background: var(--white);
   padding: 15px 25px;
@@ -62,7 +62,23 @@ label {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
 }
 
-h2 {
+.task-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #eee;
+  background: var(--white);
+  padding-bottom:  5px;
+}
+
+.task-header h2 {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.membro-equipa {
   font-size: 1.1rem;
   margin-bottom: 15px;
   border-bottom: 2px solid #eee;
@@ -152,6 +168,10 @@ button {
   width: 100%;
 }
 
+.btn-user {
+  margin-bottom: 10px;
+}
+
 .btn-primary,
 .btn-user {
   background: var(--primary);
@@ -206,29 +226,10 @@ button:hover {
   border-left: 5px solid #ccc; /* Cor muda via TS */
 }
 
-/* --- BLUR / DESFOQUE (Ex19) --- */
 .user-card > * {
   transition:
     filter 0.4s ease,
     opacity 0.4s ease;
-}
-
-.user-card.is-blurred > * {
-  filter: blur(5px);
-  opacity: 0.5;
-}
-
-.user-card.is-blurred::after {
-  content: "👁️‍🗨️ Clique para revelar";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  font-weight: bold;
-  color: var(--primary);
-  pointer-events: none;
-  text-shadow: 0 1px 2px white;
 }
 
 /* Responsividade */

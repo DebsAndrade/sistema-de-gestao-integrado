@@ -4,20 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sistema Gestor Completo</title>
-    <link rel="stylesheet" href="./src/css/style.css" />
+    <link rel="stylesheet" href="./src/style.css" />
   </head>
   <body>
     <div class="main-container">
       <header class="app-header">
         <h1>🚀 Sistema Gestor Integrado</h1>
-        <div class="status-bar">
-          <span id="estado_msg" class="badge-status">Sistema Pronto</span>
-        </div>
       </header>
 
       <div class="dashboard-grid">
         <aside class="panel user-panel">
-          <h2>1. Membros da Equipa</h2>
+          <h2 class="membro-equipa">1. Membros da Equipa</h2>
 
           <div class="stats-box">
             <div class="stat-item">
@@ -48,6 +45,9 @@
           <div class="form-box">
             <input id="user_nome" type="text" placeholder="Nome" />
             <input id="user_email" type="email" placeholder="Email" />
+
+            <p id="msg_erro_user" class="error-msg"></p>
+
             <button id="user_addBtn" class="btn-user">Adicionar Membro</button>
           </div>
 
@@ -67,7 +67,7 @@
         <main class="panel task-panel">
           <div class="task-header">
             <h2>2. Tarefas do Projeto</h2>
-            <span id="contador_tarefas" style="display: none"></span>
+            <span id="estado_msg" class="badge-status">Sistema Pronto</span>
           </div>
 
           <div class="stats-box">
@@ -115,6 +115,6 @@
       </div>
     </div>
 
-    <script src="./src/ts/app.js"></script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
