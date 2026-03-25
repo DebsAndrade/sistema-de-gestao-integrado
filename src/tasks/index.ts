@@ -1,3 +1,5 @@
 export * from "./TaskStatus";
-export * from "./TaskClasses";
+export * from "./GenericTask";
+export * from "./BugTask";
+export * from "./FeatureTask";
 export type { ITask } from "./ITask";
