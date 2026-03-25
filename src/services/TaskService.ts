@@ -1,8 +1,4 @@
-import { ITask } from '../tasks/ITask';
-import { GenericTask } from '../tasks/GenericTask';
-import { BugTask } from '../tasks/BugTask';
-import { FeatureTask } from '../tasks/FeatureTask';
-import { TaskStatus } from '../tasks/TaskStatus';
+import { ITask, GenericTask, BugTask, FeatureTask, TaskStatus } from '../tasks';
 import { HistoryLog } from '../logs/HistoryLog';
 import { NotificationService } from '../notifications/NotificationService';
 import { processTask, notifyTaskChange } from '../tasks/taskUtils';
