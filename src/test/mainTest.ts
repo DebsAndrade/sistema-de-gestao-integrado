@@ -10,7 +10,7 @@ import { Paginator } from "@utils/Paginator";
 import { WatcherSystem } from "@utils/WatcherSystem";
 import { PriorityManager } from "@utils/PriorityManager";
 import { RatingSystem } from "@utils/RatingSystem";
-import { DependencyGraph } from "@utils/DependencyGraph"
+import { DependencyGraph } from "@utils/DependencyGraph";
 
 export function mainTest() {
   // Configurar sistema
